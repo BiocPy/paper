@@ -1,0 +1,356 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+BiocPy: Porting Bioconductor’s Data Representations to Python 
+\end_layout
+
+\begin_layout Author
+Jayaram Kancherla
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+Genentech Inc., South San Francisco, CA
+\end_layout
+
+\begin_layout Abstract
+Bioconductor is an open-source software project that provides tools for
+ the analysis and comprehension of genomic data.
+ One of the main advantages of Bioconductor is the availability of standard
+ data representations and large number of analysis tools for genomic experiments.
+ These tools allow researchers to efficiently store, manipulate, and analyze
+ their data, leading to a deeper understanding of the underlying biological
+ processes.
+ However, Bioconductor data representations are currently limited to the
+ R programming language.
+ BiocPy is an effort to port these data representations in Python and integrate
+ with existing scientific ecosystem e.g.
+ Numpy, Scipy etc.
+ This includes core data structures for managing genomic intervals (
+\emph on
+GenomicRanges
+\emph default
+), container classes for single (
+\emph on
+SummarizedExperiment
+\emph default
+) or multi-assay experiments (
+\emph on
+MultiAssayExperiment
+\emph default
+), packages to efficiently perform operations over matrices (
+\emph on
+mopsy
+\emph default
+), interfaces to parse and represent genomic experiments stored from R (
+\emph on
+rds2py
+\emph default
+) and others.
+ We also extend 
+\emph on
+SummarizedExperiment
+\emph default
+ to support single-cell experiments (
+\emph on
+SingleCellExperiment
+\emph default
+, 
+\emph on
+SpatialExperiment
+\emph default
+).
+ All packages in the BiocPy ecosystem are published to Python's Package
+ Index (PyPI).
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://github.com/BiocPy"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Section
+Introduction 
+\end_layout
+
+\begin_layout Standard
+Bioconductor
+\begin_inset CommandInset citation
+LatexCommand cite
+key "huber2015orchestrating"
+literal "false"
+
+\end_inset
+
+ is an open-source community effort to develop software packages for the
+ analysis of genomic data.
+ It is widely used by researchers in the fields of genomics, bioinformatics,
+ and computational biology to perform statistical analyses, visualize data,
+ and develop predictive models.
+ One of the key features of Bioconductor is its core data structure and
+ representations to efficiently manage and represent various types of genomic
+ experiments.
+ However, these data representations are currently limited to the R programming
+ language, which is a popular choice for statistical analysis but may not
+ be familiar or accessible to researchers in other domains.
+ 
+\end_layout
+
+\begin_layout Standard
+Python is a widely used programming language in the field of data science,
+ application or interface development, and has a large and active community
+ of users.
+ Recent optimizations to the core of Python has made the language 10-60%
+ faster for various workloads (
+\begin_inset CommandInset href
+LatexCommand href
+target "https://docs.python.org/3/whatsnew/3.11.html#faster-cpython"
+
+\end_inset
+
+) .
+ Python has a number of libraries and tools that are specifically designed
+ for data analysis and has strong support for parallel computing, which
+ could be useful for working with large datasets.
+ The machine learning community has deeply invested in Python because of
+ the availability of libraries like keras, pytorch to rapidly prototype,
+ build, publish and deploy machine learning or artificial intelligence models.
+ Researchers often spend more time in the data gathering part of model developme
+nt because of the lack of an ecosystem of software packages to read, parse
+ and represent genomic experiments.
+\end_layout
+
+\begin_layout Standard
+Inspired by Bioconductor, several isolated efforts implemented genomic data
+ representations in Python, e.g.
+ the scverse ecosystem with AnnData and MuData representations, pyRanges
+ for representing genomic intervals and genome annotations.
+ However, these efforts are built for specific technologies (single cell
+ in the context of scverse) and may not provide abstract classes to represent
+ any type of genomic experiments.
+ These projects also lack compatibility with each other and provide fragmented
+ user experience across packages.
+\end_layout
+
+\begin_layout Standard
+BiocPy is an effort to bridge the gap and port core data structures and
+ representations from Bioconductor in Python.
+ tries to port familiar well established and robust core set of data representat
+ions from Bioconductor to Python.
+ This includes core data structures for managing genomic intervals and genome
+ annotations (
+\emph on
+GenomicRanges
+\emph default
+), container classes for single (
+\emph on
+SummarizedExperiment
+\emph default
+) or multi-assay experiments (
+\emph on
+MultiAssayExperiment
+\emph default
+), packages to efficiently perform operations over matrices (
+\emph on
+mopsy
+\emph default
+), interfaces to parse and represent genomic experiments stored from R (
+\emph on
+rds2py
+\emph default
+) and many others (
+\begin_inset CommandInset href
+LatexCommand href
+target "http://github.com/BiocPy"
+
+\end_inset
+
+.) We also extend 
+\emph on
+SummarizedExperiment
+\emph default
+ to support specialized genomic experiments in single-cell (
+\emph on
+SingleCellExperiment
+\emph default
+, 
+\emph on
+SpatialExperiment
+\emph default
+).
+ All packages in the BiocPy ecosystem are published to Python's Package
+ Index (PyPI).
+ This effort to standardize representation of genomic experiments can foster
+ coordinated efforts across the community to develop methods and tools for
+ analysis and visualization of genomic data.
+\end_layout
+
+\begin_layout Section
+Core Data Representations in BiocPy 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Genomic Ranges:
+\series default
+ One of the key data representations is the 
+\emph on
+GenomicRanges
+\emph default
+ package, which represents genomic intervals and annotations in a compact
+ and efficient manner.
+ This package is particularly useful for storing and manipulating large
+ datasets, such as those obtained from high-throughput sequencing experiments.
+ It allows researchers to easily select and subset specific intervals of
+ interest, as well as to perform various types of analyses on the data,
+ such as overlaps and intersections.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Summarized Experiments:
+\series default
+ Another important data representation is the 
+\emph on
+SummarizedExperiment
+\emph default
+ package, which stores and summarizes genomic data in a flexible and convenient
+ manner.
+ This package allows researchers to store multiple types of data, including
+ raw data, processed data, and metadata, in a single object.
+ It also provides tools for data manipulation and visualization, making
+ it easier for researchers to explore and understand the experiment.
+\end_layout
+
+\begin_layout Section
+Discussion 
+\end_layout
+
+\begin_layout Section
+Software Availability 
+\end_layout
+
+\begin_layout Section
+Acknowledgements
+\end_layout
+
+\begin_layout Standard
+I would like to thank Aaron Lun who has painstakingly implemented rds2cpp,
+ the C++ library to parse serialized S4 objects from RDS files.
+ I would also like to thank Hector Corrada Bravo, Michael Lawrence,Jean-Philippe
+ Fortin and William Hargreaves for many discussions related to various packages.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintCited"
+bibfiles "references"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
