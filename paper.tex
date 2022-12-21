@@ -6,6 +6,14 @@
 \usepackage{babel}
 \usepackage[unicode=true]
  {hyperref}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\newcommand{\noun}[1]{\textsc{#1}}
+
+\makeatother
+
 \begin{document}
 \title{BiocPy: Porting Bioconductor\textquoteright s Data Representations
 to Python }
@@ -42,32 +50,33 @@ and computational biology to perform statistical analyses, visualize
 data, and develop predictive models. One of the key features of Bioconductor
 is its core data structure and representations to efficiently manage
 and represent various types of genomic experiments. However, these
-data representations are currently limited to the R programming language,
-which is a popular choice for statistical analysis but may not be
-familiar or accessible to researchers in other domains. 
+data representations are currently limited to the \noun{R} programming
+language, which is a popular choice for statistical analysis but may
+not be familiar or accessible to researchers in other domains. 
 
 Python is a widely used programming language in the field of data
-science, application or interface development, and has a large and
-active community of users. Recent optimizations to the core of Python
-has made the language 10-60\% faster for various workloads (\href{https://docs.python.org/3/whatsnew/3.11.html\#faster-cpython}{https://docs.python.org/3/whatsnew/3.11.html\#faster-cpython})
-. Python has a number of libraries and tools that are specifically
-designed for data analysis and has strong support for parallel computing,
-which could be useful for working with large datasets. The machine
-learning community has deeply invested in Python because of the availability
-of libraries like keras, pytorch to rapidly prototype, build, publish
-and deploy machine learning or artificial intelligence models. Researchers
-often spend more time in the data gathering part of model development
-because of the lack of an ecosystem of software packages to read,
-parse and represent genomic experiments.
+science, application or interface development, workflow management
+and has a large and active community of users. Recent optimizations
+to the core of Python has made the language 10-60\% faster for various
+workloads\cite{python311release} Python has a number of libraries
+and tools that are specifically designed for data analysis and has
+strong support for parallel computing, which could be useful for working
+with large datasets. The machine learning community has deeply invested
+in Python because of the availability of libraries like keras, pytorch
+to rapidly prototype, build, publish and deploy machine learning or
+artificial intelligence models. Researchers often spend more time
+in the data gathering part of model development because of the lack
+of an ecosystem of software packages to read, parse and represent
+genomic experiments.
 
 Inspired by Bioconductor, several isolated efforts implemented genomic
-data representations in Python, e.g. the scverse ecosystem with AnnData
-and MuData representations, pyRanges for representing genomic intervals
-and genome annotations. However, these efforts are built for specific
-technologies (single cell in the context of scverse) and may not provide
-abstract classes to represent any type of genomic experiments. These
-projects also lack compatibility with each other and provide fragmented
-user experience across packages.
+data representations in Python, e.g. the scverse ecosystem with AnnData\cite{Virshup2021.12.16.473007}
+and MuData\cite{bredikhin2022muon} representations, pyRanges\cite{stovner2020pyranges}
+for representing genomic intervals and genome annotations. However,
+these efforts are built for specific technologies (single cell in
+the context of scverse) and may not provide abstract classes to represent
+any type of genomic experiments. These projects also lack compatibility
+with each other and provide fragmented user experience across packages.
 
 BiocPy is an effort to bridge the gap and port core data structures
 and representations from Bioconductor in Python. tries to port familiar
@@ -81,9 +90,9 @@ experiments stored from R (\emph{rds2py}) and many others (\href{http://github.c
 We also extend \emph{SummarizedExperiment} to support specialized
 genomic experiments in single-cell (\emph{SingleCellExperiment}, \emph{SpatialExperiment}).
 All packages in the BiocPy ecosystem are published to Python's Package
-Index (PyPI). This effort to standardize representation of genomic
-experiments can foster coordinated efforts across the community to
-develop methods and tools for analysis and visualization of genomic
+Index (PyPI)\cite{pythonPyPI}. This effort to standardize representation
+of genomic experiments can foster coordinated efforts across the community
+to develop methods and tools for analysis and visualization of genomic
 data.
 
 \section{Core Data Representations in BiocPy }

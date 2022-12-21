@@ -186,25 +186,28 @@ literal "false"
  One of the key features of Bioconductor is its core data structure and
  representations to efficiently manage and represent various types of genomic
  experiments.
- However, these data representations are currently limited to the R programming
- language, which is a popular choice for statistical analysis but may not
- be familiar or accessible to researchers in other domains.
+ However, these data representations are currently limited to the 
+\noun on
+R
+\noun default
+ programming language, which is a popular choice for statistical analysis
+ but may not be familiar or accessible to researchers in other domains.
  
 \end_layout
 
 \begin_layout Standard
 Python is a widely used programming language in the field of data science,
- application or interface development, and has a large and active community
- of users.
+ application or interface development, workflow management and has a large
+ and active community of users.
  Recent optimizations to the core of Python has made the language 10-60%
- faster for various workloads (
-\begin_inset CommandInset href
-LatexCommand href
-target "https://docs.python.org/3/whatsnew/3.11.html#faster-cpython"
+ faster for various workloads
+\begin_inset CommandInset citation
+LatexCommand cite
+key "python311release"
+literal "false"
 
 \end_inset
 
-) .
  Python has a number of libraries and tools that are specifically designed
  for data analysis and has strong support for parallel computing, which
  could be useful for working with large datasets.
@@ -219,7 +222,30 @@ nt because of the lack of an ecosystem of software packages to read, parse
 \begin_layout Standard
 Inspired by Bioconductor, several isolated efforts implemented genomic data
  representations in Python, e.g.
- the scverse ecosystem with AnnData and MuData representations, pyRanges
+ the scverse ecosystem with AnnData
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Virshup2021.12.16.473007"
+literal "false"
+
+\end_inset
+
+ and MuData
+\begin_inset CommandInset citation
+LatexCommand cite
+key "bredikhin2022muon"
+literal "false"
+
+\end_inset
+
+ representations, pyRanges
+\begin_inset CommandInset citation
+LatexCommand cite
+key "stovner2020pyranges"
+literal "false"
+
+\end_inset
+
  for representing genomic intervals and genome annotations.
  However, these efforts are built for specific technologies (single cell
  in the context of scverse) and may not provide abstract classes to represent
@@ -275,7 +301,15 @@ SpatialExperiment
 \emph default
 ).
  All packages in the BiocPy ecosystem are published to Python's Package
- Index (PyPI).
+ Index (PyPI)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "pythonPyPI"
+literal "false"
+
+\end_inset
+
+.
  This effort to standardize representation of genomic experiments can foster
  coordinated efforts across the community to develop methods and tools for
  analysis and visualization of genomic data.
