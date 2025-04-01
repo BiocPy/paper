@@ -1,16 +1,16 @@
-#LyX 2.3 created this file. For more info see http://www.lyx.org/
-\lyxformat 544
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
 \begin_document
 \begin_header
 \save_transient_properties true
 \origin unavailable
 \textclass article
 \use_default_options true
-\maintain_unincluded_children false
+\maintain_unincluded_children no
 \language english
 \language_package default
-\inputencoding auto
-\fontencoding global
+\inputencoding auto-legacy
+\fontencoding auto
 \font_roman "default" "default"
 \font_sans "default" "default"
 \font_typewriter "default" "default"
@@ -18,7 +18,9 @@
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
-\font_osf false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
 \font_sf_scale 100 100
 \font_tt_scale 100 100
 \use_microtype false
@@ -28,7 +30,10 @@
 \output_sync 0
 \bibtex_command default
 \index_command default
+\float_placement class
+\float_alignment class
 \paperfontsize default
+\spacing single
 \use_hyperref false
 \papersize default
 \use_geometry false
@@ -42,15 +47,20 @@
 \use_package stackrel 1
 \use_package stmaryrd 1
 \use_package undertilde 1
-\cite_engine basic
-\cite_engine_type default
+\cite_engine biblatex
+\cite_engine_type numerical
+\biblio_style plainnat
+\biblatex_bibstyle trad-unsrt
+\biblatex_citestyle numeric
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
 \justification true
 \use_refstyle 1
+\use_formatted_ref 0
 \use_minted 0
+\use_lineno 0
 \index Index
 \shortcut idx
 \color #008000
@@ -66,21 +76,38 @@
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
+\tablestyle default
 \tracking_changes false
 \output_changes false
+\change_bars false
+\postpone_fragile_content false
 \html_math_output 0
 \html_css_as_file 0
 \html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
 \end_header
 
 \begin_body
 
 \begin_layout Title
-BiocPy: Porting Bioconductor’s Data Representations to Python 
+BiocPy ecosystem:
+ Facilitating Bioconductor workflows in Python or Enabling interoperable Bioconductor workflows
 \end_layout
 
 \begin_layout Author
 Jayaram Kancherla
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+,
+ Aaron T.L.
+ Lun
 \begin_inset script superscript
 
 \begin_layout Plain Layout
@@ -102,59 +129,30 @@ Jayaram Kancherla
 
 \end_inset
 
-Genentech Inc., South San Francisco, CA
+Genentech Inc.,
+ South San Francisco,
+ CA
 \end_layout
 
 \begin_layout Abstract
-Bioconductor is an open-source software project that provides tools for
- the analysis and comprehension of genomic data.
- One of the main advantages of Bioconductor is the availability of standard
- data representations and large number of analysis tools for genomic experiments.
- These tools allow researchers to efficiently store, manipulate, and analyze
- their data, leading to a deeper understanding of the underlying biological
- processes.
- However, Bioconductor data representations are currently limited to the
- R programming language.
- BiocPy is an effort to port these data representations in Python and integrate
- with existing scientific ecosystem e.g.
- Numpy, Scipy etc.
- This includes core data structures for managing genomic intervals (
-\emph on
-GenomicRanges
-\emph default
-), container classes for single (
-\emph on
-SummarizedExperiment
-\emph default
-) or multi-assay experiments (
-\emph on
-MultiAssayExperiment
-\emph default
-), packages to efficiently perform operations over matrices (
-\emph on
-mopsy
-\emph default
-), interfaces to parse and represent genomic experiments stored from R (
-\emph on
-rds2py
-\emph default
-) and others.
- We also extend 
-\emph on
-SummarizedExperiment
-\emph default
- to support single-cell experiments (
-\emph on
-SingleCellExperiment
-\emph default
-, 
-\emph on
-SpatialExperiment
-\emph default
-).
- All packages in the BiocPy ecosystem are published to Python's Package
- Index (PyPI).
- 
+The growing complexity of modern genomic data analysis requires interoperability between different computational environments.
+ While Bioconductor has established itself as a the framework for genomic data analysis in R,
+ the Python ecosystem has gained significant traction in data science,
+ machine learning,
+ and artificial intelligence.
+ Here,
+ we present BiocPy,
+ a comprehensive suite of Python packages that ports core Bioconductor data structures that maintain compatibility with their R counterparts.
+ BiocPy facilitates seamless cross-language workflows,
+ enabling researchers to leverage the strengths of both ecosystems.
+ It implements foundational data structures such as BiocFrame,
+ GenomicRanges,
+ SummarizedExperiment,
+ and SingleCellExperiment,
+ alongside utilities for direct reading of R data objects via the rds2py package.
+ BiocPy enables researchers to combine the statistical rigor of Bioconductor with Python's machine learning capabilities,
+ offering a powerful framework for genomic analyses.
+ All packages in the BiocPy ecosystem are published to Python's Package Index (PyPI) 
 \begin_inset CommandInset href
 LatexCommand href
 target "http://github.com/BiocPy"
@@ -162,7 +160,6 @@ target "http://github.com/BiocPy"
 \end_inset
 
 .
- 
 \end_layout
 
 \begin_layout Section
@@ -170,197 +167,465 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-Bioconductor
+Bioinformatics workflows increasingly require the integration of diverse computational tools and methods.
+ Bioconductor
 \begin_inset CommandInset citation
-LatexCommand cite
+LatexCommand citealt
 key "huber2015orchestrating"
 literal "false"
 
 \end_inset
 
- is an open-source community effort to develop software packages for the
- analysis of genomic data.
- It is widely used by researchers in the fields of genomics, bioinformatics,
- and computational biology to perform statistical analyses, visualize data,
- and develop predictive models.
- One of the key features of Bioconductor is its core data structure and
- representations to efficiently manage and represent various types of genomic
- experiments.
- However, these data representations are currently limited to the 
-\noun on
-R
-\noun default
- programming language, which is a popular choice for statistical analysis
- but may not be familiar or accessible to researchers in other domains.
- 
+,
+ with its extensive collection of R packages for genomic data analysis,
+ has been the widely used by researchers in the field for nearly two decades.
+ It provides a cohesive framework with standardized data representations and analysis tools that allow researchers to seamlessly manipulate and analyze genomic data across multiple workflows.
 \end_layout
 
 \begin_layout Standard
-Python is a widely used programming language in the field of data science,
- application or interface development, workflow management and has a large
- and active community of users.
- Recent optimizations to the core of Python has made the language 10-60%
- faster for various workloads
+Meanwhile,
+ Python has emerged as the dominant language for data science,
+ machine learning,
+ and artificial intelligence applications.
+ Its extensive ecosystem of standard libraries like NumPy,
+ pandas,
+ scikit-learn,
+ and TensorFlow along with a strong community around imaging,
+ single-cell
 \begin_inset CommandInset citation
-LatexCommand cite
-key "python311release"
-literal "false"
-
-\end_inset
-
- Python has a number of libraries and tools that are specifically designed
- for data analysis and has strong support for parallel computing, which
- could be useful for working with large datasets.
- The machine learning community has deeply invested in Python because of
- the availability of libraries like keras, pytorch to rapidly prototype,
- build, publish and deploy machine learning or artificial intelligence models.
- Researchers often spend more time in the data gathering part of model developme
-nt because of the lack of an ecosystem of software packages to read, parse
- and represent genomic experiments.
-\end_layout
-
-\begin_layout Standard
-Inspired by Bioconductor, several isolated efforts implemented genomic data
- representations in Python, e.g.
- the scverse ecosystem with AnnData
-\begin_inset CommandInset citation
-LatexCommand cite
+LatexCommand citealt
 key "Virshup2021.12.16.473007"
 literal "false"
 
 \end_inset
 
- and MuData
-\begin_inset CommandInset citation
-LatexCommand cite
-key "bredikhin2022muon"
-literal "false"
-
-\end_inset
-
- representations, pyRanges
-\begin_inset CommandInset citation
-LatexCommand cite
-key "stovner2020pyranges"
-literal "false"
-
-\end_inset
-
- for representing genomic intervals and genome annotations.
- However, these efforts are built for specific technologies (single cell
- in the context of scverse) and may not provide abstract classes to represent
- any type of genomic experiments.
- These projects also lack compatibility with each other and provide fragmented
- user experience across packages.
+ and machine learning methods has made it indispensable for modern computational biology.
+ However,
+ Python lacks standardized genomic data structures equivalent to those in Bioconductor,
+ leading to fragmentation and interoperability challenges.
 \end_layout
 
 \begin_layout Standard
-BiocPy is an effort to bridge the gap and port core data structures and
- representations from Bioconductor in Python.
- tries to port familiar well established and robust core set of data representat
-ions from Bioconductor to Python.
- This includes core data structures for managing genomic intervals and genome
- annotations (
-\emph on
-GenomicRanges
-\emph default
-), container classes for single (
-\emph on
-SummarizedExperiment
-\emph default
-) or multi-assay experiments (
-\emph on
-MultiAssayExperiment
-\emph default
-), packages to efficiently perform operations over matrices (
-\emph on
-mopsy
-\emph default
-), interfaces to parse and represent genomic experiments stored from R (
-\emph on
-rds2py
-\emph default
-) and many others (
-\begin_inset CommandInset href
-LatexCommand href
-target "http://github.com/BiocPy"
-
-\end_inset
-
-.) We also extend 
-\emph on
-SummarizedExperiment
-\emph default
- to support specialized genomic experiments in single-cell (
-\emph on
-SingleCellExperiment
-\emph default
-, 
-\emph on
-SpatialExperiment
-\emph default
-).
- All packages in the BiocPy ecosystem are published to Python's Package
- Index (PyPI)
+This presents a significant challenge:
+ researchers often need to choose between Bioconductor's robust statistical methods and genomic tools in R,
+ or Python's superior machine learning capabilities and broader scientific computing ecosystem.
+ While bridging solutions such as rpy2
 \begin_inset CommandInset citation
 LatexCommand cite
-key "pythonPyPI"
+key "rpy2"
 literal "false"
 
 \end_inset
 
-.
- This effort to standardize representation of genomic experiments can foster
- coordinated efforts across the community to develop methods and tools for
- analysis and visualization of genomic data.
+ exist,
+ they require proficiency in both languages and introduce complexity in deployment.
 \end_layout
 
-\begin_layout Section
-Core Data Representations in BiocPy 
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-Genomic Ranges:
-\series default
- One of the key data representations is the 
+\begin_layout Standard
+To address this gap,
+ we developed BiocPy,
+ a collection of packages that bring Bioconductor's core data structures to Python.
+ BiocPy enables seamless interoperability between R and Python,
+ allowing researchers to leverage the strengths of both ecosystems within a unified analytical framework.
+ The project includes implementations of fundamental Bioconductor data structures such as 
+\emph on
+BiocFrame
+\emph default
+ for R-like dataframes,
+ 
 \emph on
 GenomicRanges
 \emph default
- package, which represents genomic intervals and annotations in a compact
- and efficient manner.
- This package is particularly useful for storing and manipulating large
- datasets, such as those obtained from high-throughput sequencing experiments.
- It allows researchers to easily select and subset specific intervals of
- interest, as well as to perform various types of analyses on the data,
- such as overlaps and intersections.
+ for range-based analyses,
+ containers for managing experimental data,
+ e.g.
  
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-Summarized Experiments:
-\series default
- Another important data representation is the 
 \emph on
 SummarizedExperiment
 \emph default
- package, which stores and summarizes genomic data in a flexible and convenient
- manner.
- This package allows researchers to store multiple types of data, including
- raw data, processed data, and metadata, in a single object.
- It also provides tools for data manipulation and visualization, making
- it easier for researchers to explore and understand the experiment.
+,
+ and 
+\emph on
+SingleCellExperiment
+\emph default
+,
+ along with utilities for direct reading of R data objects through the 
+\emph on
+rds2py
+\emph default
+ package.
+\end_layout
+
+\begin_layout Standard
+Unlike other Python bioinformatics libraries that create their own data models,
+ BiocPy prioritizes interoperability with Bioconductor by adhering to its design principles.
+ This approach enables seamless transition between languages and unlocks new possibilities for integrated and cross language genomic analyses.
+ Creating a bridge between computational platforms enables researches to focus their time on biological questions rather than technical challenges.
 \end_layout
 
 \begin_layout Section
-Discussion 
+Methods
+\end_layout
+
+\begin_layout Subsection
+Core Data Structures
+\end_layout
+
+\begin_layout Standard
+BiocPy implements essential foundational data structures that serve as building blocks for complex genomic data representations.
+ These structures closely mirror their Bioconductor counterparts while integrating naturally with the Python ecosystem.
+\end_layout
+
+\begin_layout Subsubsection*
+BiocFrame
+\end_layout
+
+\begin_layout Standard
+BiocFrame provides a Bioconductor-like data frame class in Python that follows the principle of "what you put is what you get." Unlike pandas DataFrame,
+ which modifies column types during input,
+ BiocFrame preserves the original data types.
+ This is particularly important when representing complex genomic data structures and ensuring interoperability with R/Bioconductor.
+ Key differences from pandas include:
+\end_layout
+
+\begin_layout Itemize
+Preservation of column data types
+\end_layout
+
+\begin_layout Itemize
+Support for nested data structures
+\end_layout
+
+\begin_layout Itemize
+Compatibility with R/Bioconductor data models
+\end_layout
+
+\begin_layout Itemize
+Functional programming paradigm for accessing and setting properties
+\end_layout
+
+\begin_layout Itemize
+BiocFrame also provides seamless conversion to and from pandas DataFrame objects,
+ allowing researchers to leverage pandas' rich functionality for data manipulation while maintaining compatibility with Bioconductor workflows.
+\end_layout
+
+\begin_layout Subsubsection*
+GenomicRanges
+\end_layout
+
+\begin_layout Standard
+The GenomicRanges package implements interval-based genomic coordinate representations,
+ essential for many genomic analyses.
+ It includes:
+\end_layout
+
+\begin_layout Itemize
+IRanges for generic interval arithmetic
+\end_layout
+
+\begin_layout Itemize
+GenomicRanges for representing genomic locations
+\end_layout
+
+\begin_layout Itemize
+SeqInfo for storing chromosome information
+\end_layout
+
+\begin_layout Itemize
+Methods for interval operations (overlap,
+ nearest,
+ etc.)
+\end_layout
+
+\begin_layout Standard
+This implementation enables Python users to perform the same range-based genomic analyses that have been a cornerstone of Bioconductor workflows in R.
+\end_layout
+
+\begin_layout Subsubsection*
+Container Classes for Experimental Data
+\end_layout
+
+\begin_layout Standard
+BiocPy includes container classes for representing experimental data:
+\end_layout
+
+\begin_layout Itemize
+SummarizedExperiment:
+ Represents genomic experiments with features (rows) and samples (columns),
+ integrating assay data with annotation metadata
+\end_layout
+
+\begin_layout Itemize
+RangedSummarizedExperiment:
+ Extends SummarizedExperiment with genomic coordinate information for each feature
+\end_layout
+
+\begin_layout Itemize
+SingleCellExperiment:
+ Represents single-cell experimental data,
+ with additional slots for reduced dimensions,
+ alternative experiments,
+ and cell-cell/feature-feature relationships
+\end_layout
+
+\begin_layout Itemize
+MultiAssayExperiment:
+ Manages multi-omic experiments across multiple samples
+\end_layout
+
+\begin_layout Standard
+These container classes follow Bioconductor's design principles where rows represent features and columns represent samples or cells,
+ ensuring conceptual consistency across languages.
+\end_layout
+
+\begin_layout Subsection
+Interoperability Features
+\end_layout
+
+\begin_layout Subsubsection*
+Direct Reading of RDS Files
+\end_layout
+
+\begin_layout Standard
+The rds2py package serves as a Python interface to the rds2cpp library,
+ enabling direct reading of RDS files in Python without intermediate formats.
+ This eliminates data conversion steps and streamlines the transition between R and Python environments.
+ Key features include:
+\end_layout
+
+\begin_layout Itemize
+Support for Bioconductor S4 classes (SummarizedExperiment,
+ SingleCellExperiment,
+ etc.)
+\end_layout
+
+\begin_layout Itemize
+Memory-efficient implementation through memory views,
+ avoiding data duplication
+\end_layout
+
+\begin_layout Itemize
+Direct conversion to BiocPy objects
+\end_layout
+
+\begin_layout Subsubsection*
+Conversion Utilities
+\end_layout
+
+\begin_layout Standard
+BiocPy provides bidirectional conversion utilities for compatibility with other Python ecosystem tools:
+\end_layout
+
+\begin_layout Itemize
+Conversion between BiocFrame and pandas DataFrame
+\end_layout
+
+\begin_layout Itemize
+Import/export capabilities for AnnData objects (used by Scanpy)
+\end_layout
+
+\begin_layout Itemize
+Support for common file formats (CSV,
+ HDF5,
+ etc.)
+\end_layout
+
+\begin_layout Subsubsection*
+Installation and Deployment
+\end_layout
+
+\begin_layout Standard
+All BiocPy packages are published to PyPI and can be installed individually or through the biocpy wrapper package.
+ Conda/Mamba configuration files are also provided for creating environments with all BiocPy dependencies.
+\end_layout
+
+\begin_layout Subsection
+Package Design Principles
+\end_layout
+
+\begin_layout Standard
+BiocPy follows several key design principles:
+\end_layout
+
+\begin_layout Itemize
+Faithful Representation:
+ BiocPy classes implement the same interfaces and behaviors as their Bioconductor counterparts,
+ ensuring conceptual consistency across languages.
+\end_layout
+
+\begin_layout Itemize
+Functional Programming Paradigm:
+ Like Bioconductor,
+ BiocPy uses functional programming patterns for accessing and setting properties,
+ avoiding in-place modifications that can lead to unexpected behavior in complex data structures.
+\end_layout
+
+\begin_layout Itemize
+Python-Native Implementation:
+ While maintaining compatibility with Bioconductor,
+ BiocPy is implemented as a native Python library,
+ following Python best practices and integrating with the broader Python ecosystem.
+\end_layout
+
+\begin_layout Itemize
+Minimal Dependencies:
+ BiocPy maintains a lean dependency footprint,
+ using standard scientific Python libraries (NumPy,
+ SciPy,
+ pandas) while avoiding unnecessary dependencies.
+\end_layout
+
+\begin_layout Itemize
+Comprehensive Documentation:
+ Each package includes detailed documentation,
+ tutorials,
+ and examples to facilitate adoption by the Python bioinformatics community.
 \end_layout
 
 \begin_layout Section
-Software Availability 
+Results (#Usecases)
+\end_layout
+
+\begin_layout Subsection
+BiocPy facilitates seamless cross-language workflows
+\end_layout
+
+\begin_layout Itemize
+ArtifactDB:
+ Language-agnostic data access
+\end_layout
+
+\begin_layout Itemize
+scrnaseq and celldex as examples
+\end_layout
+
+\begin_layout Itemize
+Legacy Data Integration:
+ Organizations with extensive Bioconductor-based data repositories can now access these through Python without migration.
+\end_layout
+
+\begin_layout Itemize
+Multi-language Workflows:
+ For research groups using both R and Python,
+ BiocPy enables seamless data exchange without format conversion or information loss.
+\end_layout
+
+\begin_layout Subsection
+BiocPy implements bindings to methods available in R/Bioconductor
+\end_layout
+
+\begin_layout Itemize
+libscran:
+ Multi-modal single-cell analysis methods
+\end_layout
+
+\begin_layout Itemize
+SingleR-inc:
+ Cell type annotation for single-cell data
+\end_layout
+
+\begin_layout Itemize
+tatami-inc:
+ Unified interface for matrix representations
+\end_layout
+
+\begin_layout Subsection
+BiocPy enables interoperability of data objects (rds2py?)
+\end_layout
+
+\begin_layout Section
+Discussion
+\end_layout
+
+\begin_layout Subsection
+Advantages of BiocPy
+\end_layout
+
+\begin_layout Standard
+BiocPy offers several key advantages for genomic data analysis:
+\end_layout
+
+\begin_layout Itemize
+Interoperability:
+ By faithfully recreating Bioconductor data structures,
+ BiocPy enables seamless transitions between R and Python ecosystems,
+ allowing researchers to leverage the strengths of both languages.
+\end_layout
+
+\begin_layout Itemize
+Standardization:
+ BiocPy brings Bioconductor's standardized data representations to Python,
+ addressing fragmentation in the Python bioinformatics ecosystem.
+\end_layout
+
+\begin_layout Itemize
+Complex Data Handling:
+ The ability to handle nested and complex data structures is critical for modern multi-omic analyses,
+ which BiocPy supports through its flexible data models.
+\end_layout
+
+\begin_layout Itemize
+Integration Potential:
+ BiocPy creates new opportunities for integrated analysis pipelines that combine R's statistical rigor with Python's machine learning capabilities.
+\end_layout
+
+\begin_layout Section
+Future Directions
+\end_layout
+
+\begin_layout Standard
+The BiocPy project is actively developing in several directions:
+\end_layout
+
+\begin_layout Itemize
+Additional Data Structures:
+ Expanding the ecosystem to include more specialized Bioconductor data structures.
+\end_layout
+
+\begin_layout Itemize
+Performance Optimization:
+ Continuing to improve computational efficiency for large-scale genomic datasets.
+\end_layout
+
+\begin_layout Itemize
+Community Engagement:
+ Building a vibrant contributor community to sustain and expand the ecosystem.
+\end_layout
+
+\begin_layout Section
+Conclusion
+\end_layout
+
+\begin_layout Standard
+BiocPy represents a significant advance in bioinformatics software by bridging the gap between R/Bioconductor and Python ecosystems.
+ By providing faithful Python implementations of core Bioconductor data structures,
+ BiocPy enables researchers to combine the statistical rigor of Bioconductor with Python's machine learning capabilities.
+ This interoperability opens new possibilities for integrated genomic analyses and promotes standardization across languages.
+\end_layout
+
+\begin_layout Standard
+As genomic research continues to generate larger and more complex datasets,
+ the need for interoperable,
+ efficient,
+ and standardized tools becomes increasingly important.
+ BiocPy addresses this need by creating a bridge between two powerful ecosystems,
+ empowering researchers to use the best tools for each part of their analytical workflows without sacrificing data integrity or analytical capabilities.
+\end_layout
+
+\begin_layout Section
+Data and Code Availability
+\end_layout
+
+\begin_layout Standard
+All BiocPy packages are open-source and available on GitHub (https://github.com/BiocPy).
+ Detailed documentation,
+ tutorials,
+ and examples are available at https://biocpy.github.io/tutorial/.
+\end_layout
+
+\begin_layout Standard
+Source code for all BiocPy packages is available under MIT.
+ The code can be accessed through the BiocPy GitHub organization (https://github.com/BiocPy).
 \end_layout
 
 \begin_layout Section
@@ -370,8 +635,10 @@ Acknowledgements
 \begin_layout Standard
 I would like to thank Aaron Lun who has painstakingly implemented rds2cpp,
  the C++ library to parse serialized S4 objects from RDS files.
- I would also like to thank Hector Corrada Bravo, Michael Lawrence,Jean-Philippe
- Fortin and William Hargreaves for many discussions related to various packages.
+ I would also like to thank Hector Corrada Bravo,
+ Michael Lawrence,
+ Jean-Philippe Fortin,
+ William Hargreaves and Kevin Yang for many discussions related to various packages.
 \end_layout
 
 \begin_layout Standard
