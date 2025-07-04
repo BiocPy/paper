@@ -189,8 +189,7 @@ Meanwhile,
  and artificial intelligence applications.
  Its extensive ecosystem of standard libraries like NumPy,
  pandas,
- scikit-learn,
- and TensorFlow along with a strong community around imaging,
+ pyTorch and TensorFlow along with a strong community around imaging,
  single-cell
 \begin_inset CommandInset citation
 LatexCommand citealt
@@ -297,14 +296,12 @@ Support for nested data structures
 \end_layout
 
 \begin_layout Itemize
-Compatibility with R/Bioconductor data models
+Compatibility with R/Bioconductor's 
+\emph on
+DataFrame
 \end_layout
 
-\begin_layout Itemize
-Functional programming paradigm for accessing and setting properties
-\end_layout
-
-\begin_layout Itemize
+\begin_layout Standard
 BiocFrame also provides seamless conversion to and from pandas DataFrame objects,
  allowing researchers to leverage pandas' rich functionality for data manipulation while maintaining compatibility with Bioconductor workflows.
 \end_layout
@@ -387,7 +384,15 @@ Direct Reading of RDS Files
 \end_layout
 
 \begin_layout Standard
-The rds2py package serves as a Python interface to the rds2cpp library,
+The 
+\emph on
+rds2py
+\emph default
+ package serves as a Python interface to the 
+\emph on
+rds2cpp
+\emph default
+ library,
  enabling direct reading of RDS files in Python without intermediate formats.
  This eliminates data conversion steps and streamlines the transition between R and Python environments.
  Key features include:
@@ -457,7 +462,7 @@ Faithful Representation:
 Functional Programming Paradigm:
  Like Bioconductor,
  BiocPy uses functional programming patterns for accessing and setting properties,
- avoiding in-place modifications that can lead to unexpected behavior in complex data structures.
+ avoiding in-place modifications that can lead to unexpected behavior in complex modular data structures.
 \end_layout
 
 \begin_layout Itemize
@@ -490,47 +495,1161 @@ Results (#Usecases)
 BiocPy facilitates seamless cross-language workflows
 \end_layout
 
-\begin_layout Itemize
-ArtifactDB:
- Language-agnostic data access
+\begin_layout Standard
+One of the primary advantages of BiocPy is its ability to enable seamless workflows that span both the R and Python ecosystems.
+ This interoperability allows researchers to leverage the statistical rigor of Bioconductor alongside Python's machine learning capabilities.
+\end_layout
+
+\begin_layout Standard
+The following sections demonstrate how BiocPy can be used in practical research scenarios to bridge the gap between R/Bioconductor and Python-based analysis pipelines.
+\end_layout
+
+\begin_layout Subsubsection
+Reading Bioconductor objects directly in Python
+\end_layout
+
+\begin_layout Standard
+The rds2py package facilitates direct reading of Bioconductor objects stored in RDS files,
+ eliminating the need for intermediate file formats or data conversion steps.
+ This capability is demonstrated in the following example,
+ where we read a SummarizedExperiment object from an RDS file:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=Python,numbers=left"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+from rds2py import read_rds
+\end_layout
+
+\begin_layout Plain Layout
+
+from summarizedexperiment import as_summarized_experiment
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Read the RDS file containing a SummarizedExperiment
+\end_layout
+
+\begin_layout Plain Layout
+
+r_obj = read_rds("path/to/summarized_experiment.rds")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Convert to a BiocPy SummarizedExperiment object
+\end_layout
+
+\begin_layout Plain Layout
+
+se = as_summarized_experiment(r_obj)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Access the data
+\end_layout
+
+\begin_layout Plain Layout
+
+print(f"Dimensions:
+ {se.shape}")
+\end_layout
+
+\begin_layout Plain Layout
+
+print(f"Assay names:
+ {se.get_assay_names()}")
+\end_layout
+
+\begin_layout Plain Layout
+
+print(f"Row metadata columns:
+ {se.get_row_data().get_column_names()}")
+\end_layout
+
+\begin_layout Plain Layout
+
+print(f"Column metadata columns:
+ {se.get_column_data().get_column_names()}")
+\end_layout
+
+\end_inset
+
+This approach is particularly valuable for organizations with extensive Bioconductor-based data repositories,
+ as it allows them to access and analyze these data in Python without migration or conversion.
+\end_layout
+
+\begin_layout Subsubsection
+Integration with ArtifactDB
+\end_layout
+
+\begin_layout Standard
+BiocPy integrates with ArtifactDB,
+ a language-agnostic system for storing and retrieving computational artifacts.
+ This allows researchers to access data objects across different programming environments:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+from biocpy.artifactdb import fetch_artifact
+\end_layout
+
+\begin_layout Plain Layout
+
+from singlecellexperiment import SingleCellExperiment
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Fetch a SingleCellExperiment stored in ArtifactDB
+\end_layout
+
+\begin_layout Plain Layout
+
+sce = fetch_artifact("my-project/single-cell-experiment:v1")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Access and analyze the data
+\end_layout
+
+\begin_layout Plain Layout
+
+print(f"Number of cells:
+ {sce.shape[1]}")
+\end_layout
+
+\begin_layout Plain Layout
+
+print(f"Number of genes:
+ {sce.shape[0]}")
+\end_layout
+
+\begin_layout Plain Layout
+
+print(f"Available reduced dimensions:
+ {sce.get_reduced_dim_names()}")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Case study:
+ scRNA-seq analysis with scRNAseq and celldex packages
+\end_layout
+
+\begin_layout Standard
+The following example demonstrates a complete cross-language workflow for single-cell RNA sequencing analysis,
+ leveraging both Bioconductor packages and Python's machine learning capabilities:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+# In R (for reference):
+\end_layout
+
+\begin_layout Plain Layout
+
+# library(scRNAseq)
+\end_layout
+
+\begin_layout Plain Layout
+
+# library(SingleCellExperiment)
+\end_layout
+
+\begin_layout Plain Layout
+
+# sce <- ZeiselBrainData()
+\end_layout
+
+\begin_layout Plain Layout
+
+# saveRDS(sce,
+ "zeisel_brain.rds")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# In Python:
+\end_layout
+
+\begin_layout Plain Layout
+
+from rds2py import read_rds
+\end_layout
+
+\begin_layout Plain Layout
+
+from singlecellexperiment import as_single_cell_experiment
+\end_layout
+
+\begin_layout Plain Layout
+
+import numpy as np
+\end_layout
+
+\begin_layout Plain Layout
+
+from sklearn.decomposition import PCA
+\end_layout
+
+\begin_layout Plain Layout
+
+from umap import UMAP
+\end_layout
+
+\begin_layout Plain Layout
+
+from sklearn.cluster import KMeans
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Read the SCE object created in R
+\end_layout
+
+\begin_layout Plain Layout
+
+r_obj = read_rds("zeisel_brain.rds")
+\end_layout
+
+\begin_layout Plain Layout
+
+sce = as_single_cell_experiment(r_obj)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Access normalized expression data
+\end_layout
+
+\begin_layout Plain Layout
+
+normalized = sce.get_assay("logcounts")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Perform dimensionality reduction with scikit-learn
+\end_layout
+
+\begin_layout Plain Layout
+
+pca = PCA(n_components=20)
+\end_layout
+
+\begin_layout Plain Layout
+
+pca_results = pca.fit_transform(normalized.T)  # Transpose for cell-wise PCA
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Add the PCA results to the SCE object
+\end_layout
+
+\begin_layout Plain Layout
+
+sce.set_reduced_dim("PCA",
+ pca_results)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Perform UMAP for visualization
+\end_layout
+
+\begin_layout Plain Layout
+
+umap = UMAP(n_components=2)
+\end_layout
+
+\begin_layout Plain Layout
+
+umap_results = umap.fit_transform(pca_results)
+\end_layout
+
+\begin_layout Plain Layout
+
+sce.set_reduced_dim("UMAP",
+ umap_results)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Cluster the cells using KMeans
+\end_layout
+
+\begin_layout Plain Layout
+
+kmeans = KMeans(n_clusters=10,
+ random_state=0)
+\end_layout
+
+\begin_layout Plain Layout
+
+clusters = kmeans.fit_predict(pca_results)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Add cluster assignments to the column data
+\end_layout
+
+\begin_layout Plain Layout
+
+col_data = sce.get_column_data().add_column("kmeans_cluster",
+ clusters)
+\end_layout
+
+\begin_layout Plain Layout
+
+sce = sce.set_column_data(col_data)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Save the results for further analysis in either R or Python
+\end_layout
+
+\begin_layout Plain Layout
+
+from singlecellexperiment import write_h5ad
+\end_layout
+
+\begin_layout Plain Layout
+
+write_h5ad(sce,
+ "zeisel_brain_analyzed.h5ad")
+\end_layout
+
+\end_inset
+
+This example demonstrates how BiocPy enables researchers to:
 \end_layout
 
 \begin_layout Itemize
-scrnaseq and celldex as examples
+Read data processed in R/Bioconductor
 \end_layout
 
 \begin_layout Itemize
-Legacy Data Integration:
- Organizations with extensive Bioconductor-based data repositories can now access these through Python without migration.
+Perform analysis using Python's machine learning libraries
 \end_layout
 
 \begin_layout Itemize
-Multi-language Workflows:
- For research groups using both R and Python,
- BiocPy enables seamless data exchange without format conversion or information loss.
+Store results in a format accessible by both ecosystems
 \end_layout
 
 \begin_layout Subsection
 BiocPy implements bindings to methods available in R/Bioconductor
 \end_layout
 
-\begin_layout Itemize
-libscran:
- Multi-modal single-cell analysis methods
+\begin_layout Standard
+BiocPy provides Python bindings to high-performance analysis methods implemented in C++ libraries that are also used by Bioconductor packages.
+ This approach allows Python users to access the same computational methods without reimplementation.
 \end_layout
 
-\begin_layout Itemize
-SingleR-inc:
- Cell type annotation for single-cell data
+\begin_layout Subsubsection
+Integration with libscran for single-cell analysis
 \end_layout
 
-\begin_layout Itemize
-tatami-inc:
- Unified interface for matrix representations
+\begin_layout Standard
+The scranpy package provides Python bindings to libscran,
+ a C++ library that implements efficient methods for single-cell RNA-seq analysis:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import numpy as np
+\end_layout
+
+\begin_layout Plain Layout
+
+from scipy import sparse
+\end_layout
+
+\begin_layout Plain Layout
+
+from scranpy.normalization import LogNormCounts
+\end_layout
+
+\begin_layout Plain Layout
+
+from singlecellexperiment import SingleCellExperiment
+\end_layout
+
+\begin_layout Plain Layout
+
+from biocframe import BiocFrame
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Create a sparse count matrix
+\end_layout
+
+\begin_layout Plain Layout
+
+nrows = 5000  # genes
+\end_layout
+
+\begin_layout Plain Layout
+
+ncols = 1000  # cells
+\end_layout
+
+\begin_layout Plain Layout
+
+counts = sparse.random(nrows,
+ ncols,
+ density=0.1,
+ format="csr",
+ dtype=np.float32)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Create a SingleCellExperiment
+\end_layout
+
+\begin_layout Plain Layout
+
+sce = SingleCellExperiment(assays={"counts":
+ counts})
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Perform log-normalization using libscran
+\end_layout
+
+\begin_layout Plain Layout
+
+norm = LogNormCounts()
+\end_layout
+
+\begin_layout Plain Layout
+
+normalized = norm(sce.get_assay("counts"))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Add the normalized data to the SCE
+\end_layout
+
+\begin_layout Plain Layout
+
+sce.set_assay("logcounts",
+ normalized)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Cell type annotation with SingleR
+\end_layout
+
+\begin_layout Standard
+BiocPy integrates with SingleR,
+ a method for cell type annotation based on reference datasets:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+from singler import SingleR
+\end_layout
+
+\begin_layout Plain Layout
+
+from singlecellexperiment import SingleCellExperiment
+\end_layout
+
+\begin_layout Plain Layout
+
+from celldex import fetch_reference
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Fetch a pre-built reference dataset
+\end_layout
+
+\begin_layout Plain Layout
+
+reference = fetch_reference("BlueprintEncodeData")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Prepare a query dataset (already loaded as a SingleCellExperiment)
+\end_layout
+
+\begin_layout Plain Layout
+
+query_sce = SingleCellExperiment(...)  # Your SCE object with normalized data
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Run SingleR
+\end_layout
+
+\begin_layout Plain Layout
+
+singler = SingleR()
+\end_layout
+
+\begin_layout Plain Layout
+
+results = singler.run(
+\end_layout
+
+\begin_layout Plain Layout
+
+    test=query_sce.get_assay("logcounts"),
+\end_layout
+
+\begin_layout Plain Layout
+
+    ref=reference.get_assay("logcounts"),
+\end_layout
+
+\begin_layout Plain Layout
+
+    labels=reference.get_column_data().get_column("label")
+\end_layout
+
+\begin_layout Plain Layout
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Add the annotations to the query dataset
+\end_layout
+
+\begin_layout Plain Layout
+
+col_data = query_sce.get_column_data().add_column("cell_type",
+ results["labels"])
+\end_layout
+
+\begin_layout Plain Layout
+
+query_sce = query_sce.set_column_data(col_data)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
-BiocPy enables interoperability of data objects (rds2py?)
+BiocPy enables interoperability of data objects across frameworks
+\end_layout
+
+\begin_layout Standard
+The ability to seamlessly transfer data between different frameworks and formats is a key feature of BiocPy.
+ This interoperability is particularly important in genomics,
+ where researchers often need to use multiple specialized tools for different aspects of their analysis.
+\end_layout
+
+\begin_layout Standard
+BiocPy provides comprehensive support for interoperability between different data formats and representations,
+ enabling researchers to work with genomic data across different tools and environments.
+\end_layout
+
+\begin_layout Subsubsection
+Converting between BiocFrame and pandas DataFrame
+\end_layout
+
+\begin_layout Standard
+BiocPy facilitates seamless conversion between BiocFrame and pandas DataFrame objects:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import pandas as pd
+\end_layout
+
+\begin_layout Plain Layout
+
+from biocframe import BiocFrame
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Create a pandas DataFrame
+\end_layout
+
+\begin_layout Plain Layout
+
+df = pd.DataFrame({
+\end_layout
+
+\begin_layout Plain Layout
+
+    "gene_id":
+ ["ENSG00000000003",
+ "ENSG00000000005",
+ "ENSG00000000419"],
+\end_layout
+
+\begin_layout Plain Layout
+
+    "gene_name":
+ ["TSPAN6",
+ "TNMD",
+ "DPM1"],
+\end_layout
+
+\begin_layout Plain Layout
+
+    "expression":
+ [5.2,
+ 0.0,
+ 3.7]
+\end_layout
+
+\begin_layout Plain Layout
+
+})
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Convert to BiocFrame
+\end_layout
+
+\begin_layout Plain Layout
+
+bf = BiocFrame.from_pandas(df)
+\end_layout
+
+\begin_layout Plain Layout
+
+print(bf)
+\end_layout
+
+\begin_layout Plain Layout
+
+# BiocFrame with 3 rows and 3 columns
+\end_layout
+
+\begin_layout Plain Layout
+
+# gene_id gene_name expression
+\end_layout
+
+\begin_layout Plain Layout
+
+# <list>   <list>    <list>
+\end_layout
+
+\begin_layout Plain Layout
+
+# 0 ENSG00000000003 TSPAN6    5.2
+\end_layout
+
+\begin_layout Plain Layout
+
+# 1 ENSG00000000005 TNMD      0.0
+\end_layout
+
+\begin_layout Plain Layout
+
+# 2 ENSG00000000419 DPM1      3.7
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Perform operations on BiocFrame
+\end_layout
+
+\begin_layout Plain Layout
+
+bf = bf.add_column("log_expr",
+ [np.log1p(x) for x in bf.get_column("expression")])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Convert back to pandas for visualization or other pandas-specific operations
+\end_layout
+
+\begin_layout Plain Layout
+
+df_enriched = bf.to_pandas()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Integration with AnnData for single-cell analysis
+\end_layout
+
+\begin_layout Standard
+BiocPy enables interoperability with the AnnData format used by Scanpy and other single-cell analysis tools:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import anndata as ad
+\end_layout
+
+\begin_layout Plain Layout
+
+from singlecellexperiment import SingleCellExperiment,
+ read_h5ad,
+ write_h5ad
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Load an AnnData object
+\end_layout
+
+\begin_layout Plain Layout
+
+adata = ad.read_h5ad("pbmc3k.h5ad")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Convert to SingleCellExperiment
+\end_layout
+
+\begin_layout Plain Layout
+
+sce = read_h5ad(adata)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Access and manipulate as a SingleCellExperiment
+\end_layout
+
+\begin_layout Plain Layout
+
+print(f"Dimensions:
+ {sce.shape}")
+\end_layout
+
+\begin_layout Plain Layout
+
+print(f"Available assays:
+ {sce.get_assay_names()}")
+\end_layout
+
+\begin_layout Plain Layout
+
+print(f"Available reduced dimensions:
+ {sce.get_reduced_dim_names()}")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Perform operations using BiocPy interfaces
+\end_layout
+
+\begin_layout Plain Layout
+
+# ...
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Convert back to AnnData for Scanpy integration
+\end_layout
+
+\begin_layout Plain Layout
+
+adata_new = write_h5ad(sce,
+ return_anndata=True)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Working with genomic ranges for NGS analysis
+\end_layout
+
+\begin_layout Standard
+BiocPy's GenomicRanges package enables sophisticated operations on genomic intervals:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+from genomicranges import GenomicRanges
+\end_layout
+
+\begin_layout Plain Layout
+
+from iranges import IRanges
+\end_layout
+
+\begin_layout Plain Layout
+
+import pandas as pd
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Create genomic ranges from a BED file
+\end_layout
+
+\begin_layout Plain Layout
+
+bed_df = pd.read_csv("peaks.bed",
+ sep="
+\backslash
+t",
+ header=None,
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+                     names=["chrom",
+ "start",
+ "end",
+ "name",
+ "score"])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+gr = GenomicRanges.from_pandas(bed_df)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Create another set of ranges (e.g.,
+ gene annotations)
+\end_layout
+
+\begin_layout Plain Layout
+
+genes = GenomicRanges(
+\end_layout
+
+\begin_layout Plain Layout
+
+    seqnames=["chr1",
+ "chr1",
+ "chr2",
+ "chr2",
+ "chr3"],
+\end_layout
+
+\begin_layout Plain Layout
+
+    ranges=IRanges(starts=[1000,
+ 5000,
+ 2000,
+ 8000,
+ 5000],
+\end_layout
+
+\begin_layout Plain Layout
+
+                   ends=[3000,
+ 8000,
+ 4000,
+ 9000,
+ 7000]),
+\end_layout
+
+\begin_layout Plain Layout
+
+    strand=["+",
+ "-",
+ "+",
+ "+",
+ "-"],
+\end_layout
+
+\begin_layout Plain Layout
+
+    mcols={"gene_id":
+ ["g1",
+ "g2",
+ "g3",
+ "g4",
+ "g5"],
+\end_layout
+
+\begin_layout Plain Layout
+
+           "gene_type":
+ ["protein_coding"] * 5}
+\end_layout
+
+\begin_layout Plain Layout
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Find overlaps between peaks and genes
+\end_layout
+
+\begin_layout Plain Layout
+
+overlaps = gr.findOverlaps(genes)
+\end_layout
+
+\begin_layout Plain Layout
+
+print(f"Number of overlaps:
+ {len(overlaps)}")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Get the overlapping regions
+\end_layout
+
+\begin_layout Plain Layout
+
+hit_idx = overlaps["queryHits"]
+\end_layout
+
+\begin_layout Plain Layout
+
+overlapping_peaks = gr[hit_idx]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Export as BED format
+\end_layout
+
+\begin_layout Plain Layout
+
+overlapping_df = overlapping_peaks.to_pandas()
+\end_layout
+
+\begin_layout Plain Layout
+
+overlapping_df.to_csv("overlapping_peaks.bed",
+ sep="
+\backslash
+t",
+ header=False,
+ index=False)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -542,31 +1661,518 @@ Advantages of BiocPy
 \end_layout
 
 \begin_layout Standard
-BiocPy offers several key advantages for genomic data analysis:
+BiocPy offers several key advantages for genomic data analysis that address critical challenges in the bioinformatics field.
+ Comparing BiocPy to existing approaches highlights its unique position in the genomic data analysis ecosystem.
 \end_layout
 
-\begin_layout Itemize
-Interoperability:
- By faithfully recreating Bioconductor data structures,
- BiocPy enables seamless transitions between R and Python ecosystems,
- allowing researchers to leverage the strengths of both languages.
+\begin_layout Standard
+Table 1 summarizes the key differences between BiocPy and other Python-based genomic data analysis frameworks:
 \end_layout
 
-\begin_layout Itemize
-Standardization:
- BiocPy brings Bioconductor's standardized data representations to Python,
+\begin_layout Standard
+Comparison with alternative approaches
+\end_layout
+
+\begin_layout Standard
+Several approaches have been developed to bridge the gap between R/Bioconductor and Python for genomic data analysis.
+ Each has its strengths and limitations:
+\end_layout
+
+\begin_layout Standard
+4.2.1 Direct R execution from Python (rpy2)
+\end_layout
+
+\begin_layout Standard
+The rpy2 package provides an interface to run R code from Python,
+ allowing access to Bioconductor functionality:
+\end_layout
+
+\begin_layout Standard
+Advantages:
+\end_layout
+
+\begin_layout Standard
+Direct access to all Bioconductor packages
+\end_layout
+
+\begin_layout Standard
+No need to reimplement R functions
+\end_layout
+
+\begin_layout Standard
+Limitations:
+\end_layout
+
+\begin_layout Standard
+Requires R installation
+\end_layout
+
+\begin_layout Standard
+Complex setup and deployment
+\end_layout
+
+\begin_layout Standard
+Performance overhead for data conversion
+\end_layout
+
+\begin_layout Standard
+Requires knowledge of both languages
+\end_layout
+
+\begin_layout Standard
+Not a Python-native solution
+\end_layout
+
+\begin_layout Standard
+4.2.2 Python-specific genomic libraries
+\end_layout
+
+\begin_layout Standard
+Libraries like pybedtools,
+ pyranges,
+ and pysam provide Python-specific implementations of genomic data structures:
+\end_layout
+
+\begin_layout Standard
+Advantages:
+\end_layout
+
+\begin_layout Standard
+Native Python implementation
+\end_layout
+
+\begin_layout Standard
+Optimized for Python workflows
+\end_layout
+
+\begin_layout Standard
+No external dependencies on R
+\end_layout
+
+\begin_layout Standard
+Limitations:
+\end_layout
+
+\begin_layout Standard
+Limited interoperability with Bioconductor
+\end_layout
+
+\begin_layout Standard
+Different data models and interfaces
+\end_layout
+
+\begin_layout Standard
+Fragmentation across multiple libraries
+\end_layout
+
+\begin_layout Standard
+Often lack the comprehensive coverage of Bioconductor
+\end_layout
+
+\begin_layout Standard
+4.2.3 AnnData/Scanpy ecosystem
+\end_layout
+
+\begin_layout Standard
+The AnnData format and Scanpy framework provide tools for single-cell analysis in Python:
+\end_layout
+
+\begin_layout Standard
+Advantages:
+\end_layout
+
+\begin_layout Standard
+Comprehensive single-cell analysis toolkit
+\end_layout
+
+\begin_layout Standard
+Integration with machine learning libraries
+\end_layout
+
+\begin_layout Standard
+Growing ecosystem of compatible tools
+\end_layout
+
+\begin_layout Standard
+Limitations:
+\end_layout
+
+\begin_layout Standard
+Focused primarily on single-cell data
+\end_layout
+
+\begin_layout Standard
+Different data model from Bioconductor
+\end_layout
+
+\begin_layout Standard
+Limited support for other genomic data types
+\end_layout
+
+\begin_layout Standard
+Limited interoperability with Bioconductor
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Features
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+BiocPy
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+scverse/AnnData
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+pybedtools
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Direct R/Bioconductor compatibility
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+✓
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Limited
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+×
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Native pandas integration
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+✓
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+✓
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Limited
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Genomic interval operations
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+✓
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+×
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+✓
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Multi-assay container support
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+✓
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Limited
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+×
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RDS object support
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+✓
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+×
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+×
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Complex nested structures
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+✓
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Limited
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+×
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Standardization of genomic data structures in Python
+\end_layout
+
+\begin_layout Standard
+BiocPy brings Bioconductor's standardized data representations to Python,
  addressing fragmentation in the Python bioinformatics ecosystem.
+ This standardization offers several benefits:
 \end_layout
 
 \begin_layout Itemize
-Complex Data Handling:
- The ability to handle nested and complex data structures is critical for modern multi-omic analyses,
+Consistent data models:
+ BiocPy implements a consistent set of data structures across packages,
+ ensuring that objects from different components of the ecosystem work together seamlessly.
+\end_layout
+
+\begin_layout Itemize
+Well-defined interfaces:
+ Each data structure provides clear and well-documented interfaces for accessing and manipulating data,
+ making code more readable and maintainable.
+\end_layout
+
+\begin_layout Itemize
+Established design patterns:
+ By following Bioconductor's design patterns,
+ BiocPy leverages years of community experience in genomic data representation.
+\end_layout
+
+\begin_layout Itemize
+Common vocabulary:
+ Researchers familiar with either Bioconductor or BiocPy can easily understand code written in the other ecosystem due to shared terminology and concepts.
+\end_layout
+
+\begin_layout Subsubsection
+Complex data handling capabilities
+\end_layout
+
+\begin_layout Standard
+The ability to handle nested and complex data structures is critical for modern multi-omic analyses,
  which BiocPy supports through its flexible data models.
+ This capability allows researchers to:
 \end_layout
 
 \begin_layout Itemize
-Integration Potential:
- BiocPy creates new opportunities for integrated analysis pipelines that combine R's statistical rigor with Python's machine learning capabilities.
+Represent multi-modal data:
+ Store and manipulate data from different experimental modalities within a single coherent framework.
+\end_layout
+
+\begin_layout Itemize
+Maintain relationships between data components:
+ Preserve connections between features,
+ samples,
+ and experimental conditions.
+\end_layout
+
+\begin_layout Itemize
+Support heterogeneous data types:
+ Accommodate diverse data types within the same container,
+ from simple numeric values to complex nested structures.
+\end_layout
+
+\begin_layout Subsubsection
+Interoperability across computational environments without duplication
+\end_layout
+
+\begin_layout Standard
+One of the most significant advantages of BiocPy is its ability to bridge the gap between R/Bioconductor and Python ecosystems.
+ By faithfully recreating Bioconductor data structures in Python,
+ BiocPy enables seamless transitions between languages,
+ allowing researchers to leverage the strengths of both environments.
+\end_layout
+
+\begin_layout Standard
+This interoperability is especially valuable for research groups that use both languages,
+ as it eliminates the need for complex data conversion pipelines or duplicate implementations of analysis methods.
+ For example,
+ a team could perform initial data processing and quality control using Bioconductor's specialized genomics packages,
+ then transition to Python for advanced machine learning analyses,
+ all while maintaining the same underlying data structures and guarantees.
 \end_layout
 
 \begin_layout Section
@@ -574,22 +2180,41 @@ Future Directions
 \end_layout
 
 \begin_layout Standard
-The BiocPy project is actively developing in several directions:
+While BiocPy represents a significant advance in bridging the gap between R/Bioconductor and Python,
+ several limitations and challenges remain:
 \end_layout
 
-\begin_layout Itemize
-Additional Data Structures:
- Expanding the ecosystem to include more specialized Bioconductor data structures.
+\begin_layout Subsection
+Coverage of Bioconductor packages
 \end_layout
 
-\begin_layout Itemize
-Performance Optimization:
- Continuing to improve computational efficiency for large-scale genomic datasets.
+\begin_layout Standard
+BiocPy currently implements only the core data structures from Bioconductor.
+ The vast ecosystem of specialized analysis packages in Bioconductor (>2000 packages) is not yet fully covered in BiocPy.
+ Efforts are ongoing to implement Python bindings for the most commonly used analysis methods.
 \end_layout
 
-\begin_layout Itemize
-Community Engagement:
- Building a vibrant contributor community to sustain and expand the ecosystem.
+\begin_layout Subsection
+Performance considerations
+\end_layout
+
+\begin_layout Standard
+While BiocPy strives for efficient implementations,
+ certain operations may be slower than their R counterparts due to the inherent differences between the languages.
+ Performance optimization is an ongoing focus,
+ particularly for large-scale genomic datasets.
+\end_layout
+
+\begin_layout Subsection
+Documentation and learning resources
+\end_layout
+
+\begin_layout Standard
+Comprehensive documentation and learning resources are essential for new users.
+ While BiocPy provides detailed API documentation,
+ additional tutorials,
+ examples,
+ and use cases are being developed to facilitate adoption.
 \end_layout
 
 \begin_layout Section
