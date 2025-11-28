@@ -1,0 +1,3621 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children no
+\language american
+\language_package default
+\inputencoding utf8
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine biblatex
+\cite_engine_type numerical
+\biblatex_bibstyle trad-unsrt
+\biblatex_citestyle numeric
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content true
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Title
+BiocPy:
+ A Comprehensive Framework for Cross-Platform Genomic Interoperability and Polyglot Workflows
+\end_layout
+
+\begin_layout Author
+Jayaram Kancherla
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+
+\lang english
+1
+\end_layout
+
+\end_inset
+
+,
+ Aaron T.L.
+ Lun
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+
+\lang english
+1
+\end_layout
+
+\end_inset
+
+Genentech Inc.,
+ South San Francisco,
+ CA,
+ USA
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Aarun Lun Inc,
+ Sydney,
+ Australia
+\end_layout
+
+\begin_layout Standard
+The modern landscape of computational biology is characterized by two main ecosystems:
+ the statistical methods available through Bioconductor,
+ rooted in the R programming language,
+ and the rapid growth of machine learning frameworks within the Python ecosystem.
+ Bioconductor has served as the gold standard for high-throughput genomic analysis by providing standardized data structures and reproducible statistical methods,
+ where as Python has quickly become the primary environment for deep learning,
+ image analysis,
+ and general-purpose data science.
+ This presents a challenge to the scientific community,
+ navigating complex,
+ fragile,
+ and often inefficient interoperability solutions to leverage the strengths of both worlds.
+\end_layout
+
+\begin_layout Standard
+We present BiocPy,
+ a software framework and ecosystem designed to bridge this gap.
+ BiocPy is not a wrapper for R functions rather,
+ it re-engineers the foundational data structures of Bioconductor,
+ specifically GenomicRanges,
+ SummarizedExperiment,
+ SingleCellExperiment etc.
+ as native Python data representations.
+ Furthermore,
+ BiocPy provides the rds2py package facilitating the direct ingestion of serialized R data objects (RDS files) into Python environments.
+ Using BiocPy's data structures enables seamless,
+ polyglot analysis workflows for e.g.
+ the scran/singleR collection of tools for single-cell RNA-seq analysis.
+ All packages in the BiocPy ecosystem are published to Python's Package Index (PyPI) 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://github.com/BiocPy"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+Bioinformatics is an interdisciplinary field at the intersection of molecular biology,
+ statistics,
+ and computer science.
+ Historically,
+ these disciplines have favored different computational tools,
+ leading to a diverse software landscape to perform genomic analyses.
+ Bioconductor
+\begin_inset CommandInset citation
+LatexCommand cite
+key "gentleman_bioconductor_2004"
+literal "false"
+
+\end_inset
+
+ built upon the R programming language,
+ it was designed with a primary focus on statistical analysis and visualization of genomic data.
+ Over the last two decades,
+ it has grown into a repository of over 2,000 packages,
+ conforming to a strict set of shared data structures and design principles.
+ The strength of Bioconductor lies in its community-driven standardization and peer-review process,
+ objects such as GenomicRanges
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lawrence_software_2013"
+literal "false"
+
+\end_inset
+
+ and SummarizedExperiment
+\begin_inset CommandInset citation
+LatexCommand cite
+key "noauthor_summarizedexperiment_nodate"
+literal "false"
+
+\end_inset
+
+ provide a common currency for data exchange,
+ allowing developers to quickly build and iterate methods without reinventing new data structures.
+ For researchers focused on rigorous statistical testing methods and established genomic workflows,
+ Bioconductor remains the standard environment to perform these analyses.
+ 
+\end_layout
+
+\begin_layout Standard
+Python has emerged over the last decade as the dominant language of data science and machine learning (ML).
+ Powered by libraries such as NumPy
+\begin_inset CommandInset citation
+LatexCommand cite
+key "harris_array_2020"
+literal "false"
+
+\end_inset
+
+,
+ PyTorch
+\begin_inset CommandInset citation
+LatexCommand cite
+key "paszke_pytorch_2019"
+literal "false"
+
+\end_inset
+
+,
+ and TensorFlow
+\begin_inset CommandInset citation
+LatexCommand cite
+key "abadi_tensorflow_2016"
+literal "false"
+
+\end_inset
+
+,
+ it provides flexibility,
+ and integration with modern computing paradigms (distributed computing,
+ ease of GPU access etc).
+ In the context of genomics,
+ Python has seen a surge in popularity driven by the rise of single-cell analysis through the scverse efforts
+\begin_inset CommandInset citation
+LatexCommand cite
+key "virshup_scverse_2023"
+literal "false"
+
+\end_inset
+
+,
+ where large-scale analyses benefit significantly from ML libraries (e.g.
+ rapids-singlecell
+\begin_inset CommandInset citation
+LatexCommand cite
+key "dicks_scverserapids_singlecell_2024"
+literal "false"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+The coexistence of these two powerful computational ecosystems creates a fragmentation problem.
+ A typical modern genomic workflow might require the robust methods available in Bioconductor (R),
+ followed by the application of a deep learning models or inference methods available in Python.
+ Traditionally,
+ researchers navigated this by:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+File-based exchange:
+ 
+\series default
+Saving intermediate results in CSV or text files.
+ This is error-prone,
+ loses metadata,
+ and is computationally expensive due to repeated serialization and deserialization when dealing with a large cohort of samples.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Interface libraries:
+ 
+\series default
+Using tools like rpy2
+\begin_inset CommandInset citation
+LatexCommand cite
+key "noauthor_rpy2rpy2_2025"
+literal "false"
+
+\end_inset
+
+ to run R code within Python.
+ While functional,
+ rpy2 requires the user to maintain two complex runtime environments (R and Python) simultaneously,
+ leading to dependency hell,
+ installation fragility,
+ and significant overhead in context switching.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Reimplementation:
+ 
+\series default
+Rewriting statistical methods in Python.
+ This often leads to subtle differences in results,
+ lacks the peer-reviewed rigor of the original Bioconductor implementation,
+ and contributes to incompatibility in standard data models (e.g.,
+ the divergence between Bioconductor's SingleCellExperiment
+\begin_inset CommandInset citation
+LatexCommand cite
+key "amezquita_orchestrating_2020"
+literal "false"
+
+\end_inset
+
+ and scverse's AnnData
+\begin_inset CommandInset citation
+LatexCommand cite
+key "virshup_anndata_2024"
+literal "false"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+BiocPy addresses this gap,
+ rather than forcing R to run inside Python (vice-versa),
+ or creating an entirely new,
+ incompatible Python-native standard,
+ BiocPy ports Bioconductor’s core class definitions into Python.
+ A SummarizedExperiment in BiocPy is designed to have the same slots,
+ and the same behavioral guarantees as its R counterpart.
+ This ensures that the conceptual data model remains consistent,
+ reducing the cognitive burden for researchers transitioning between languages.
+ By adhering to Bioconductor’s design principles,
+ such as the separation of assay data from row/column metadata and the use of functional programming patterns,
+ BiocPy enables a workflow where data can round-trip between R and Python.
+ Furthermore,
+ By providing Python bindings to these same C++ libraries (e.g.,
+ libscran
+\begin_inset CommandInset citation
+LatexCommand cite
+key "noauthor_libscran_nodate"
+literal "false"
+
+\end_inset
+
+),
+ BiocPy allows Python users to access the exact same methods in R,
+ ensuring consistent interpretation and reliability in results.
+ These efforts create a bridge between computational platforms and enables researches to focus their time on biological questions rather than technical challenges.
+\end_layout
+
+\begin_layout Standard
+BiocPy is not the only attempt to solve the R/Python divide,
+ but its approach is unique.
+ Unlike rpy2,
+ which is powerful but heavy due to embedding an R instance,
+ it's often difficult to configure in containerized environments (Docker/Singularity).
+ BiocPy is lightweight and native.
+ AnnData is excellent for single-cell matrices but lacks the generality of SummarizedExperiment (which handles any matrix data) and does not support GenomicRanges (or range based operations).
+ BiocPy supports a broader spectrum of genomic data types.
+ Finally,
+ while writing genomic tools in pure Python is possible,
+ it often leads to poor performance or lack of standardization;
+ BiocPy provides the necessary structure for stable and sustainable software development.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Float figure
+placement h
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename main_figure.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Overview of the BiocPy framework.
+ BiocPy provides native Python implementations of core Bioconductor classes,
+ enabling shared memory representations and direct interoperability with R data artifacts.
+ This figure illustrates the parallel class structures between Bioconductor and BiocPy along with shared C++ backends (e.g.,
+ libscran) and interoperability storage layers (rds2py,
+ ArtifactDB).
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Core Data Structures
+\end_layout
+
+\begin_layout Standard
+The development of BiocPy is not just a translation of R code into Python,
+ it is adoption of Bioconductor’s design philosophy into a Pythonic context.
+ The development of the ecosystem is guided by adherence to specific design principles that prioritize reliability,
+ interoperability and usability.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Functional Programming and Immutability:
+ 
+\series default
+An important feature of the BiocPy ecosystem is its reliance on functional programming paradigms.
+ In the broader Python data science world,
+ libraries like pandas
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mckinney_pandas_nodate"
+literal "false"
+
+\end_inset
+
+ often encourage in-place modification of objects (e.g.,
+ df.drop(...,
+ inplace=True)).
+ While convenient for simple scripts,
+ in-place mutation can be dangerous in complex genomic pipelines where multiple analysis steps reference the same underlying data object.
+ Side effects from one function can inadvertently corrupt the state of the data for downstream processes.
+ BiocPy mitigates this by adopting a functional approach similar to R.
+ Operations that modify an object typically return a new instance rather than altering the original.
+ This approach enhances the safety of modular workflows,
+ ensuring that the input data remains invariant unless explicitly overwritten.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Python-Native Implementation with Minimal Dependencies:
+ 
+\series default
+While the conceptual architecture borrows from R,
+ the implementation is strictly Python-native.
+ BiocPy leverages the well established scientific Python stack,
+ NumPy for numerical arrays,
+ SciPy
+\begin_inset CommandInset citation
+LatexCommand cite
+key "virtanen_scipy_2020"
+literal "false"
+
+\end_inset
+
+ for sparse matrices,
+ to ensure high performance and compatibility.
+ The ecosystem maintains a lean dependency footprint.
+ By avoiding unnecessary heavy libraries,
+ BiocPy ensures that its core packages (BiocFrame,
+ GenomicRanges,
+ SummarizedExperiment) can be installed easily in diverse environments.
+ This lightweight design facilitates the creation of clean environments using Conda or pip,
+ minimizing the dependency conflicts that plague complex bioinformatics software stacks.
+\end_layout
+
+\begin_layout Subsection
+BiocFrame:
+ A Flexible DataFrame
+\end_layout
+
+\begin_layout Standard
+The pandas DataFrame is ubiquitous in most analysis workflows.
+ However,
+ for genomic data,
+ pandas presents several limitations that BiocFrame addresses.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Type Preservation:
+ 
+\series default
+One of the most persistent issues with pandas in a bioinformatics context is its aggressive type inference and coercion.
+ For example,
+ introducing a missing value (NaN) into an integer column in pandas typically forces the entire column to be cast to floating-point,
+ as integer type does not support NaN.
+ In genomics,
+ the distinction between an integer count of 0,
+ a count of 1,
+ and a missing value is critical.
+ BiocFrame follows the Bioconductor principle of "what you put is what you get".
+ It preserves the original data types of columns,
+ ensuring that integer counts remain integers and that complex objects are stored as intended.
+ This type stability is crucial when the data represents biological measurements.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Nested and Complex Data:
+ 
+\series default
+Genomic data is rarely flat.
+ A single row representing a gene might have multiple associated pieces of metadata that are themselves lists or complex objects (e.g.,
+ a list of exons,
+ a set of protein domains,
+ or a GenomicRanges object representing its locus).
+ pandas generally struggles with columns containing complex objects,
+ often relegating them to a slow,
+ generic object dtype.
+ BiocFrame is designed to support nested data structures natively.
+ It can hold columns that are themselves BiocFrame objects or lists of varying lengths.
+ This allows for the construction of recursive,
+ hierarchical models that accurately reflect the biological data,
+ rather than flattening everything into a 2D table.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Functional Programming Paradigm:
+ 
+\series default
+As mentioned in the design philosophy,
+ BiocPy,
+ mirroring Bioconductor,
+ adopts a functional programming paradigm.
+ BiocFrame operations typically return new objects.
+ This immutability-by-default approach,
+ while different from standard Pythonic patterns,
+ is safer for complex scientific pipelines where tracking the state of data is important.
+ This applies not only to BiocFrame but all packages within BiocPy.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=Python,numbers=left,showstringspaces=false"
+inline false
+status open
+
+\begin_layout Plain Layout
+from biocframe import BiocFrame
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+# A BiocFrame can hold complex,
+ nested lists natively
+\end_layout
+
+\begin_layout Plain Layout
+bframe = BiocFrame ({
+\end_layout
+
+\begin_layout Plain Layout
+	"gene_id":
+ ["G1",
+ "G2",
+ "G3"],
+\end_layout
+
+\begin_layout Plain Layout
+	"counts":
+ [10,
+ 20,
+ None],
+\end_layout
+
+\begin_layout Plain Layout
+	"isoforms":
+ [["iso1",
+ "iso2"],
+ ["iso3"],
+ 
+\end_layout
+
+\begin_layout Plain Layout
+		["iso4",
+ "iso5",
+ "iso6"]],
+\end_layout
+
+\begin_layout Plain Layout
+	"location":
+ BiocFrame({
+\end_layout
+
+\begin_layout Plain Layout
+        "chromosome":
+ ["chr17",
+ "chr17",
+ "chr7"],
+\end_layout
+
+\begin_layout Plain Layout
+        "start":
+ [43044295,
+ 7668422,
+ 55019017],
+\end_layout
+
+\begin_layout Plain Layout
+        "end":
+ [43125483,
+ 7687550,
+ 55211628],
+\end_layout
+
+\begin_layout Plain Layout
+        "strand":
+ ["-",
+ "-",
+ "+"],
+\end_layout
+
+\begin_layout Plain Layout
+    }),
+\end_layout
+
+\begin_layout Plain Layout
+})
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+print(bframe)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+# Chain operations without side effects
+\end_layout
+
+\begin_layout Plain Layout
+# All operations return new objects
+\end_layout
+
+\begin_layout Plain Layout
+modified = (bframe
+\end_layout
+
+\begin_layout Plain Layout
+    .set_column_names(["gene_id",
+ "expression_counts",
+ 
+\end_layout
+
+\begin_layout Plain Layout
+		
+\begin_inset Quotes eld
+\end_inset
+
+isoforms
+\begin_inset Quotes erd
+\end_inset
+
+,
+ 
+\begin_inset Quotes eld
+\end_inset
+
+locations
+\begin_inset Quotes erd
+\end_inset
+
+])
+\end_layout
+
+\begin_layout Plain Layout
+    .set_row_names(["row1",
+ "row2",
+ "row3"])
+\end_layout
+
+\begin_layout Plain Layout
+    .set_metadata({"source":
+ "example"})
+\end_layout
+
+\begin_layout Plain Layout
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+# Original is unchanged
+\end_layout
+
+\begin_layout Plain Layout
+print("Original column names:",
+ bframe.column_names)
+\end_layout
+
+\begin_layout Plain Layout
+print("Modified column names:",
+ modified.column_names)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "showstringspaces=false"
+inline false
+status open
+
+\begin_layout Plain Layout
+## OUTPUT
+\end_layout
+
+\begin_layout Plain Layout
+# ...
+ nested structures are preserved without object -dtype coercion
+\end_layout
+
+\begin_layout Plain Layout
+BiocFrame with 3 rows and 4 columns
+\end_layout
+
+\begin_layout Plain Layout
+    gene_id  counts                 isoforms                   location
+\end_layout
+
+\begin_layout Plain Layout
+      <list>  <list>                   <list>               <BiocFrame>
+\end_layout
+
+\begin_layout Plain Layout
+[0]       G1      10         ['iso1',
+ 'iso2'] chr17:43044295:43125483:-
+\end_layout
+
+\begin_layout Plain Layout
+[1]       G2      20                 ['iso3']   chr17:7668422:7687550:-
+\end_layout
+
+\begin_layout Plain Layout
+[2]       G3    None ['iso4',
+ 'iso5',
+ 'iso6']  chr7:55019017:55211628:+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+Original column names:
+ ['gene_id',
+ 'counts',
+ 'isoforms',
+ 'location']
+\end_layout
+
+\begin_layout Plain Layout
+Modified column names:
+ ['gene_id',
+ 'expression_counts',
+ 'isoforms',
+ 'locations']
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Additionally,
+ BiocFrame includes robust utilities for conversion to and from pandas or polar objects,
+ because researchers often need to leverage these for general data cleaning or visualization tasks before moving into Bioconductor-specific workflows.
+\end_layout
+
+\begin_layout Subsection
+GenomicRanges
+\end_layout
+
+\begin_layout Standard
+The most crucial feature of Bioconductor is its handling of genomic intervals via the GenomicRanges package.
+ In Python,
+ interval arithmetic has historically been handled by wrapping command-line tools (like bedtools
+\begin_inset CommandInset citation
+LatexCommand cite
+key "quinlan_bedtools_2010"
+literal "false"
+
+\end_inset
+
+) or using standalone libraries like pyranges.
+ BiocPy brings a native,
+ in-memory implementation of GenomicRanges to Python.
+ The BiocPy implementation decomposes genomic information into three interacting classes:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Sequence Information:
+ 
+\series default
+Stores the "universe" of the experiment,
+ the chromosome names and their lengths.
+ This prevents invalid operations,
+ such as defining a range that extends beyond the end of a chromosome.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Ranges:
+
+\series default
+ Implements generic integer interval arithmetic.
+ This calculates overlaps,
+ gaps,
+ and shifts,
+ independent of biological context.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Genomic metadata:
+ 
+\series default
+Adds the biological layer,
+ chromosome names (sequence names) and strand information (+,
+ -,
+ or *) to the IRanges.
+\end_layout
+
+\begin_layout Standard
+BiocPy’s GenomicRanges abstracts the coordinate system,
+ providing methods to import from commonly used annotation file formats or R objects while maintaining internal consistency.
+ The availability of methods like findOverlaps,
+ nearest,
+ and resize in native Python allows for complex analyses.
+ For example,
+ one can load a set of ChIP-seq peaks and a set of gene annotations,
+ and in a few lines of Python,
+ determine which genes have peaks in their promoter regions,
+ handling strand-specificity automatically.
+\end_layout
+
+\begin_layout Subsection
+Containers for Experimental Data
+\end_layout
+
+\begin_layout Standard
+To encapsulate the complexity of high-throughput experiments,
+ BiocPy provides container classes that bind assay data to metadata.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+SummarizedExperiment:
+ 
+\series default
+The SummarizedExperiment (SE) class is the fundamental container for matrix-like data.
+ It enforces a strict geometry:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\series bold
+Assays:
+ 
+\series default
+A list of matrices (e.g.,
+ counts,
+ log-counts) where rows are features and columns are samples.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+RowData:
+ 
+\series default
+A BiocFrame (or GenomicRanges in the case of RangedSummarizedExperiment [rowRanges]) describing the rows.
+ Must match the number of rows in assays.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+ColData:
+ 
+\series default
+A BiocFrame describing the columns (samples).
+ Must match the number of columns in assays.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+SingleCellExperiment:
+ 
+\series default
+Extending SE,
+ the SingleCellExperiment (SCE) is tailored for scRNA-seq.
+ It adds slots for:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\series bold
+ReducedDims:
+ 
+\series default
+Storing embeddings like PCA,
+ t-SNE,
+ and UMAP coordinates directly within the object.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+AltExps:
+ 
+\series default
+Storing "Alternative Experiments." In modern single-cell workflows,
+ a cell might have RNA data,
+ but also Spike-in controls,
+ or Antibody Derived Tags (CITE-seq).
+ AltExps allows these auxiliary matrices to be stored within the main object,
+ linked to the same cells but with different feature sets.
+\end_layout
+
+\begin_layout Standard
+This design contrasts with the AnnData object used in scverse (scanpy) ecosystem.
+ While AnnData is powerful,
+ SingleCellExperiment offers a stricter adherence to the Bioconductor S4 model,
+ support genomic range operations and facilitating interoperability with R tools.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+MultiAssayExperiment:
+ 
+\series default
+For complex study designs involving multiple assays performed on the same subjects (e.g.,
+ a cohort with RNA-seq,
+ mutation calls,
+ and copy number variants),
+ BiocPy implements MultiAssayExperiment
+\begin_inset CommandInset citation
+LatexCommand cite
+key "noauthor_software_nodate"
+literal "false"
+
+\end_inset
+
+.
+ This container manages a collection of experiments (which can be SummarizedExperiment objects or its derivatives) and a sample map that links biological specimens to the specific assays performed on them.
+ This structure is vital for multi-omics integration,
+ allowing for coordinated subsetting across diverse data modalities.
+\end_layout
+
+\begin_layout Standard
+And many more packages for efficiently handling and lazily operating on data on-disk (delayed arrays),
+ and extending summarized experiment representations to support spatial modalities as shown in Table 1.
+ 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Float table
+placement h
+alignment center
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="24" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Bioconductor
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+BiocPy
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Base Data Structures
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Data Frame
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Supported by DataFrame 
+\end_layout
+
+\begin_layout Plain Layout
+& DFrame classes
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+BiocFrame
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+IRanges
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+GenomicRanges
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Experiment Containers
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SummarizedExperiment
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SingleCellExperiment
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MultiAssayExperiment
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SpatialFeatureExperiment
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SpatialExperiment
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Utilities & R Interoperability
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+rds2py
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+–
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ArtifactDB representations
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+ (package:
+ alabaster)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+ (package:
+ dolomite)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+BiocUtils
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Common utilities mirroring 
+\end_layout
+
+\begin_layout Plain Layout
+R's base functionality
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mopsy
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Matrix operations with 
+\end_layout
+
+\begin_layout Plain Layout
+R-like syntax
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+BiocFileCache
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Delayed Operations
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+DelayedArray
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+HDF5Array
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+TileDBArray
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Analysis methods
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+scran - Multi-model 
+\end_layout
+
+\begin_layout Plain Layout
+single-cell analysis
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+ (package:
+ scrapper)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+ (package:
+ scranpy)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+SingleR:
+ Cell type 
+\end_layout
+
+\begin_layout Plain Layout
+annotation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+ (package:
+ singleR)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\checkmark$
+\end_inset
+
+ (package:
+ singler)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+List of Bioconductor equivalent BiocPy packages.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Interoperability
+\end_layout
+
+\begin_layout Standard
+A major barrier in cross-language workflows is the incompatibility of data serialization formats (R’s RDS vs.
+ Python’s Pickle).
+ BiocPy addresses this challenge through two primary approaches:
+ direct binary ingestion via rds2py and language-agnostic interchange via ArtifactDB.
+\end_layout
+
+\begin_layout Subsection
+Direct Ingestion with rds2py
+\end_layout
+
+\begin_layout Standard
+BiocPy provides rds2py,
+ a package that can read R’s binary serialization format (RDS).
+ This allows Python environments to ingest complex S4 objects directly from disk without requiring an installed R runtime.
+ rds2py implements memory-efficient loading strategies rather than performing deep copies where ever possible.
+ This is essential when loading large Bioconductor objects for downstream analyses in Python.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=Python,numbers=left,showstringspaces=false"
+inline false
+status open
+
+\begin_layout Plain Layout
+from rds2py import read_rds
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+# Load a pre - processed R object (e.g.,
+ from a colleague )
+\end_layout
+
+\begin_layout Plain Layout
+r_obj = read_rds("processed_data.rds")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+# uses BiocPy's SingleCellExperiment representation
+\end_layout
+
+\begin_layout Plain Layout
+print(sce)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+## OUTPUT
+\end_layout
+
+\begin_layout Plain Layout
+class:
+ SingleCellExperiment
+\end_layout
+
+\begin_layout Plain Layout
+dimensions:
+ (20006,
+ 2874)
+\end_layout
+
+\begin_layout Plain Layout
+assays(2):
+ ['counts',
+ 'logcounts']
+\end_layout
+
+\begin_layout Plain Layout
+row_data columns(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+row_names(0):
+  
+\end_layout
+
+\begin_layout Plain Layout
+column_data columns(15):
+ ['tissue',
+ 'group #',
+ 
+\end_layout
+
+\begin_layout Plain Layout
+'total mRNA mol',
+ ...,
+ 'subsets.Mito',
+ 'sizeFactor',
+ 'label']
+\end_layout
+
+\begin_layout Plain Layout
+column_names(2874):
+ ['1772071015_C02',
+ '1772071017_G12',
+ 
+\end_layout
+
+\begin_layout Plain Layout
+'1772071017_A05',
+ ...,
+ '1772066097_D04',
+ '1772063068_D01',
+ 
+\end_layout
+
+\begin_layout Plain Layout
+'1772066098_A12']
+\end_layout
+
+\begin_layout Plain Layout
+main_experiment_name:
+  
+\end_layout
+
+\begin_layout Plain Layout
+reduced_dims(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+alternative_experiments(2):
+ ['ERCC',
+ 'repeat']
+\end_layout
+
+\begin_layout Plain Layout
+row_pairs(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+column_pairs(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+metadata(0):
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Language-Agnostic Formats with ArtifactDB
+\end_layout
+
+\begin_layout Standard
+For sustainable collaborative workflows across computational environments,
+ BiocPy integrates with language agnostic schemas and specifications defined in ArtifactDB
+\begin_inset CommandInset citation
+LatexCommand cite
+key "noauthor_artifactdb_nodate"
+literal "false"
+
+\end_inset
+
+.
+ ArtifactDB is a system for managing genomic datasets on-disk where data is stored in language-neutral formats (HDF5 for matrices,
+ JSON for metadata etc) but is wrapped in rich semantic metadata.
+ ArtifactDB validates these objects to ensure cross language accessibility of the data.
+\end_layout
+
+\begin_layout Standard
+This layer acts as an intermediate exchange format.
+ An R user can serialize a SingleCellExperiment to disk using ArtifactDB,
+ and a Python user can fetch that same artifact from disk.
+ The ArtifactDB python clients automatically reconstructs the native Python object from the remote components using an appropriate BiocPy class.
+ This ensures that datasets remain consistent across the research community,
+ regardless of the programming language used for analysis.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=R,numbers=left,showstringspaces=false"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+# R code
+\end_layout
+
+\begin_layout Plain Layout
+library(SingleCellExperiment)
+\end_layout
+
+\begin_layout Plain Layout
+example(SingleCellExperiment,
+ echo=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+library(alabaster.sce)
+\end_layout
+
+\begin_layout Plain Layout
+path <- 
+\begin_inset Quotes eld
+\end_inset
+
+/my/data/path
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+saveObject(sce,
+ path)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=Python,numbers=left,showstringspaces=false"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+# Python code
+\end_layout
+
+\begin_layout Plain Layout
+import dolomite_base
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+path = 
+\begin_inset Quotes eld
+\end_inset
+
+/my/data/path
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+out = dolomite_base.read_object(path)
+\end_layout
+
+\begin_layout Plain Layout
+print(out)
+\end_layout
+
+\end_inset
+
+
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+##OUTPUT
+\end_layout
+
+\begin_layout Plain Layout
+
+class:
+ SingleCellExperiment
+\end_layout
+
+\begin_layout Plain Layout
+
+dimensions:
+ (200 100)
+\end_layout
+
+\begin_layout Plain Layout
+
+assays(2):
+ ['counts',
+ 'logcounts']
+\end_layout
+
+\begin_layout Plain Layout
+
+row_data columns(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+
+row_names(0):
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+column_data columns(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+
+column_names(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+
+main_experiment_name:
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+reduced_dims(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+
+alternative_experiments(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+
+row_pairs(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+
+column_pairs(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+
+metadata(0):
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Quote
+Note:
+ The library names 
+\begin_inset Quotes eld
+\end_inset
+
+alabaster
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+dolomite
+\begin_inset Quotes erd
+\end_inset
+
+ are the manifestations of the ArtifactDB schemas and specifications in R and Python respectively.
+\end_layout
+
+\begin_layout Standard
+The scrnaseq
+\begin_inset CommandInset citation
+LatexCommand cite
+key "noauthor_singler-inccelldex-py_2025,noauthor_singler-inccelldex_2025"
+literal "false"
+
+\end_inset
+
+ (collection of single-cell RNA-seq datasets) and celldex
+\begin_inset CommandInset citation
+LatexCommand cite
+key "noauthor_singler-inccelldex-py_2025,noauthor_singler-inccelldex_2025"
+literal "false"
+
+\end_inset
+
+ (collection of reference single-cell datasets for cell type annotation) repositories store their data in ArtifactDB format,
+ providing access to these resources in both R and Python.
+ 
+\end_layout
+
+\begin_layout Subsection
+Integration with Broader Python Ecosystem
+\end_layout
+
+\begin_layout Standard
+BiocPy acts as a central hub,
+ not just connecting to R but also to the broader Python ecosystem.
+ We take advantage of existing efforts in Python whenever possible
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+scverse:
+ 
+\series default
+The AnnData format is the standard for the scverse ecosystem (scanpy).
+ BiocPy provides utilities to convert SingleCellExperiment objects to AnnData objects.
+ This allows users to mix and match tools:
+ utilizing Bioconductor’s statistical methods for normalization and feature selection,
+ then converting to AnnData to use Scanpy’s visualization tools or scvi-tools for probabilistic modeling.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Pandas or Polars:
+ 
+\series default
+As noted in the BiocFrame section,
+ the integration with pandas ensures that BiocPy objects can easily interface with general-purpose data cleaning and visualization libraries.
+\end_layout
+
+\begin_layout Section
+Enabling Methods Development and Polyglot Workflows
+\end_layout
+
+\begin_layout Standard
+The true value of BiocPy lies not just in data representations and storage,
+ but in enabling robust methods development and flexible,
+ iterative analysis pipelines.
+ By providing standard data structures and shared C++ backends,
+ BiocPy allows developers to build tools that are reproducible across languages and allows analysts to leverage the best of both worlds.
+\end_layout
+
+\begin_layout Subsection
+Shared C++ libraries
+\end_layout
+
+\begin_layout Subsubsection
+Multi-modal Single-Cell Analysis using scranpy
+\end_layout
+
+\begin_layout Standard
+Reproducibility is often compromised when methods are re-implemented in different languages due to subtle differences in algorithms.
+ BiocPy addresses this by binding to the same standalone C++ libraries used by R packages.
+ For example,
+ the scran
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lun_step-by-step_2016"
+literal "false"
+
+\end_inset
+
+/scrapper
+\begin_inset CommandInset citation
+LatexCommand cite
+key "noauthor_scrapper_nodate,lun_powering_2023"
+literal "false"
+
+\end_inset
+
+ package is a staple of scRNA-seq analysis in R
+\begin_inset CommandInset citation
+LatexCommand cite
+key "amezquita_orchestrating_2020"
+literal "false"
+
+\end_inset
+
+.
+ Its core logic resides in libscran,
+ a C++ library.
+ BiocPy’s scranpy links to this same library.
+ When a user performs log-normalization or feature selection in Python using scranpy,
+ they are executing the exact same compiled code as an R user.
+ This guarantees that the statistical transformations applied to the data are identical,
+ preserving the validity of downstream comparisons.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=Python,numbers=left,showstringspaces=false"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import scranpy
+\end_layout
+
+\begin_layout Plain Layout
+
+from singlecellexperiment import SingleCellExperiment
+\end_layout
+
+\begin_layout Plain Layout
+
+from scipy import sparse
+\end_layout
+
+\begin_layout Plain Layout
+
+import numpy as np
+\end_layout
+
+\begin_layout Plain Layout
+
+from rds2py import read_rds
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Download the test dataset from 
+\end_layout
+
+\begin_layout Plain Layout
+
+# [here](https://github.com/kanaverse/random-test-files/releases) 
+\end_layout
+
+\begin_layout Plain Layout
+
+# or pick your own dataset
+\end_layout
+
+\begin_layout Plain Layout
+
+# We choose the ziesel brain dataset
+\end_layout
+
+\begin_layout Plain Layout
+
+sce = read_rds("csc.rds") 
+\end_layout
+
+\begin_layout Plain Layout
+
+print(sce)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Run full scran analysis with defaults
+\end_layout
+
+\begin_layout Plain Layout
+
+results = scranpy.analyze(sce)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Access the normalized counts
+\end_layout
+
+\begin_layout Plain Layout
+
+print(results.rna_normalized)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Convert analysis results to a SingleCellExperiment
+\end_layout
+
+\begin_layout Plain Layout
+
+print(results.to_singlecellexperiment())
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "showstringspaces=false"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+## OUTPUT
+\end_layout
+
+\begin_layout Plain Layout
+
+class:
+ SingleCellExperiment
+\end_layout
+
+\begin_layout Plain Layout
+
+dimensions:
+ (20006,
+ 3005)
+\end_layout
+
+\begin_layout Plain Layout
+
+assays(1):
+ ['counts']
+\end_layout
+
+\begin_layout Plain Layout
+
+row_data columns(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+
+row_names(0):
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+column_data columns(10):
+ ['tissue',
+ 'group #',
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+'total mRNA mol',
+ 'well',
+ 'sex',
+ 'age',
+ 'diameter',
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+'cell_id',
+ 'level1class',
+ 'level2class']
+\end_layout
+
+\begin_layout Plain Layout
+
+column_names(3005):
+ ['1772071015_C02',
+ '1772071017_G12',
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+'1772071017_A05',
+ ...,
+ '1772063068_D01',
+ '1772066098_A12',
+\end_layout
+
+\begin_layout Plain Layout
+
+'1772058148_F03']
+\end_layout
+
+\begin_layout Plain Layout
+
+main_experiment_name:
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+reduced_dims(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+
+alternative_experiments(2):
+ ['ERCC',
+ 'repeat']
+\end_layout
+
+\begin_layout Plain Layout
+
+row_pairs(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+
+column_pairs(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+
+metadata(0):
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# normalized counts
+\end_layout
+
+\begin_layout Plain Layout
+
+<20006 x 3002> DelayedArray object of type 'float64'
+\end_layout
+
+\begin_layout Plain Layout
+
+[[0.
+        ,
+ 0.
+        ,
+ 0.
+        ,
+ ...,
+ 0.
+        ,
+ 0.
+        ,
+\end_layout
+
+\begin_layout Plain Layout
+
+  1.71829137],
+\end_layout
+
+\begin_layout Plain Layout
+
+ [1.58903752,
+ 0.72632423,
+ 0.
+        ,
+ ...,
+ 0.
+        ,
+ 0.
+        ,
+\end_layout
+
+\begin_layout Plain Layout
+
+  1.71829137],
+\end_layout
+
+\begin_layout Plain Layout
+
+ [1.58903752,
+ 0.72632423,
+ 1.90880006,
+ ...,
+ 0.
+        ,
+ 0.
+        ,
+\end_layout
+
+\begin_layout Plain Layout
+
+  0.
+        ],
+\end_layout
+
+\begin_layout Plain Layout
+
+ ...,
+\end_layout
+
+\begin_layout Plain Layout
+
+ [6.73850101,
+ 7.74376021,
+ 6.59938726,
+ ...,
+ 9.17864868,
+ 7.45000363,
+\end_layout
+
+\begin_layout Plain Layout
+
+  9.68523385],
+\end_layout
+
+\begin_layout Plain Layout
+
+ [4.44323218,
+ 5.87255369,
+ 5.50901887,
+ ...,
+ 7.23715052,
+ 5.88144921,
+\end_layout
+
+\begin_layout Plain Layout
+
+  6.9081424 ],
+\end_layout
+
+\begin_layout Plain Layout
+
+ [3.27849603,
+ 3.34509245,
+ 2.35964763,
+ ...,
+ 5.78012009,
+ 3.95306026,
+\end_layout
+
+\begin_layout Plain Layout
+
+  4.94373579]]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# with results
+\end_layout
+
+\begin_layout Plain Layout
+
+class:
+ SingleCellExperiment
+\end_layout
+
+\begin_layout Plain Layout
+
+dimensions:
+ (20006,
+ 3002)
+\end_layout
+
+\begin_layout Plain Layout
+
+assays(2):
+ ['filtered',
+ 'normalized']
+\end_layout
+
+\begin_layout Plain Layout
+
+row_data columns(5):
+ ['mean',
+ 'variance',
+ 'fitted',
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+'residual',
+ 'is_highly_variable']
+\end_layout
+
+\begin_layout Plain Layout
+
+row_names(0):
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+column_data columns(4):
+ ['sum',
+ 'detected',
+ 'size_factors',
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+'clusters']
+\end_layout
+
+\begin_layout Plain Layout
+
+column_names(3002):
+ ['1772071015_C02',
+ '1772071017_G12',
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+'1772071017_A05',
+ ...,
+ '1772063068_D01',
+ '1772066098_A12',
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+'1772058148_F03']
+\end_layout
+
+\begin_layout Plain Layout
+
+main_experiment_name:
+  
+\end_layout
+
+\begin_layout Plain Layout
+
+reduced_dims(3):
+ ['pca',
+ 'tsne',
+ 'umap']
+\end_layout
+
+\begin_layout Plain Layout
+
+alternative_experiments(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+
+row_pairs(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+
+column_pairs(0):
+ []
+\end_layout
+
+\begin_layout Plain Layout
+
+metadata(0):
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+SingleR:
+ Reference-Based Annotation
+\end_layout
+
+\begin_layout Standard
+Cell type annotation is a critical step in single-cell analysis.
+ We demonstrate how BiocPy enables the use of Bioconductor’s reference-based annotation tools directly within a Python environment,
+ using the singler
+\begin_inset CommandInset citation
+LatexCommand cite
+key "aran_reference-based_2019,noauthor_singler-inc_nodate"
+literal "false"
+
+\end_inset
+
+ package.
+ This workflow highlights the ecosystem’s ability to fetch remote references and apply rigorous statistical methods,
+ using the exact same algorithms available in R.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "language=Python,showstringspaces=false"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import celldex
+\end_layout
+
+\begin_layout Plain Layout
+
+import singler
+\end_layout
+
+\begin_layout Plain Layout
+
+from rds2py import read_rds
+\end_layout
+
+\begin_layout Plain Layout
+
+from singlecellexperiment import SingleCellExperiment
+\end_layout
+
+\begin_layout Plain Layout
+
+import scrnaseq
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Load Query Data (e.g.,
+ processed in R or Python)
+\end_layout
+
+\begin_layout Plain Layout
+
+# Ingest a standard anndata object containing log-counts
+\end_layout
+
+\begin_layout Plain Layout
+
+sce = SingleCellExperiment.from_anndata("pbmc_10k.h5ad")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Fetch Reference Data
+\end_layout
+
+\begin_layout Plain Layout
+
+# Seamlessly download versioned Bioconductor references
+\end_layout
+
+\begin_layout Plain Layout
+
+# This returns a SummarizedExperiment object
+\end_layout
+
+\begin_layout Plain Layout
+
+ref = celldex.fetch_reference("hpca",
+ version="2024-02-26",
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+    realize_assays=True)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Run SingleR
+\end_layout
+
+\begin_layout Plain Layout
+
+# Executes the efficient C++ implementation via Python bindings
+\end_layout
+
+\begin_layout Plain Layout
+
+results = singler.annotate_single(
+\end_layout
+
+\begin_layout Plain Layout
+
+    test_data=sce,
+\end_layout
+
+\begin_layout Plain Layout
+
+    ref_data=ref,
+\end_layout
+
+\begin_layout Plain Layout
+
+    ref_labels="label.main",
+\end_layout
+
+\begin_layout Plain Layout
+
+	num_threads=4
+\end_layout
+
+\begin_layout Plain Layout
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+print(results)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# Integrate Results
+\end_layout
+
+\begin_layout Plain Layout
+
+# The results are a BiocFrame,
+ easily attached to the SCE
+\end_layout
+
+\begin_layout Plain Layout
+
+sce.col_data.set_column("label",
+ results["best"],
+ in_place=True)
+\end_layout
+
+\begin_layout Plain Layout
+
+print(sce)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+print(sce.col_data)
+\end_layout
+
+\begin_layout Plain Layout
+
+# Output includes the original metadata plus new 'label' column
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "showstringspaces=false"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+## OUTPUT
+\end_layout
+
+\begin_layout Plain Layout
+
+BiocFrame with 3005 rows and 3 columns
+\end_layout
+
+\begin_layout Plain Layout
+
+                   best                                   scores               delta
+\end_layout
+
+\begin_layout Plain Layout
+
+                 <list>                              <BiocFrame>  <ndarray[float64]>
+\end_layout
+
+\begin_layout Plain Layout
+
+   [0]          Neurons 0.14848353136146522:0.369816672819234...
+  0.1314151998357579
+\end_layout
+
+\begin_layout Plain Layout
+
+   [1]          Neurons 0.1500358063682189:0.3536469573556885...
+   0.137672030780345
+\end_layout
+
+\begin_layout Plain Layout
+
+   [2]          Neurons 0.1780744053280597:0.4040262647442599...
+  0.1424375513615223
+\end_layout
+
+\begin_layout Plain Layout
+
+                    ...
+                                      ...
+                 ...
+\end_layout
+
+\begin_layout Plain Layout
+
+[3002]          Neurons 0.16514758768078408:0.268001256223217...
+ 0.06835293767066297
+\end_layout
+
+\begin_layout Plain Layout
+
+[3003]       Astrocytes 0.2634713326926066:0.3154826361557434...
+ 0.11967704957097225
+\end_layout
+
+\begin_layout Plain Layout
+
+[3004] Oligodendrocytes 0.2414008350020091:0.2827875151488226...
+  0.1482934787498414
+\end_layout
+
+\begin_layout Plain Layout
+
+------
+\end_layout
+
+\begin_layout Plain Layout
+
+metadata(2):
+ used markers
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The results object is returned as a BiocFrame containing the predicted labels and scores,
+ which can be immediately attached to the query SingleCellExperiment.
+\end_layout
+
+\begin_layout Standard
+These shared libraries enable us to not only support analysis in Python and R,
+ but also enable development of interactive scientific web applications,
+ e.g.
+ analyzing multi-modal single-cell analyses in Kana
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lun_powering_2023"
+literal "false"
+
+\end_inset
+
+.
+ As mentioned already,
+ this enables reuse of the same underlying methods across computational environments.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Float figure
+placement h
+alignment document
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename c++ biocpy.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Shared C++ libraries enabling single-cell analyses across computational environments.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Advanced Genomic Integration
+\end_layout
+
+\begin_layout Standard
+BiocPy’s GenomicRanges serves as a bridge between biological semantics and the general-purpose Python data stack.
+ In this scenario,
+ we analyze ChIP-seq peaks by filtering for promoter region and visualizing the results using seaborn,
+ a popular Python plotting library.
+ This demonstrates how BiocPy handles the biological complexity (strand-aware resizing) while delegating visualization to standard Python tools.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "numbers=left,showstringspaces=false"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+from biocframe import BiocFrame
+\end_layout
+
+\begin_layout Plain Layout
+
+from genomicranges import GenomicRanges
+\end_layout
+
+\begin_layout Plain Layout
+
+from iranges import IRanges
+\end_layout
+
+\begin_layout Plain Layout
+
+import pandas as pd
+\end_layout
+
+\begin_layout Plain Layout
+
+import seaborn as sns
+\end_layout
+
+\begin_layout Plain Layout
+
+import matplotlib.pyplot as plt
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# 1.
+ Define Genomic Intervals
+\end_layout
+
+\begin_layout Plain Layout
+
+# peaks:
+ ChIP-seq signal;
+ genes:
+ gene annotations
+\end_layout
+
+\begin_layout Plain Layout
+
+peaks = GenomicRanges(
+\end_layout
+
+\begin_layout Plain Layout
+
+	seqnames=["chr1",
+ "chr1",
+ "chr2"],
+\end_layout
+
+\begin_layout Plain Layout
+
+	ranges=IRanges([100,
+ 500,
+ 800],
+ [200,
+ 600,
+ 900]),
+\end_layout
+
+\begin_layout Plain Layout
+
+	strand=["*",
+ "*",
+ "*"],
+\end_layout
+
+\begin_layout Plain Layout
+
+	mcols=BiocFrame({"score":
+ [10.5,
+ 20.1,
+ 5.5]})
+\end_layout
+
+\begin_layout Plain Layout
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+genes = GenomicRanges(
+\end_layout
+
+\begin_layout Plain Layout
+
+	seqnames=["chr1",
+ "chr1"],
+\end_layout
+
+\begin_layout Plain Layout
+
+	ranges=IRanges([150,
+ 1000],
+ [400,
+ 2000]),
+\end_layout
+
+\begin_layout Plain Layout
+
+	strand=["+",
+ "-"]
+\end_layout
+
+\begin_layout Plain Layout
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# 2.
+ Biological Operation:
+ Define Promoters
+\end_layout
+
+\begin_layout Plain Layout
+
+# Resize genes to 2kb upstream of TSS (strand-aware)
+\end_layout
+
+\begin_layout Plain Layout
+
+promoters = genes.promoters(upstream=2000,
+ downstream=0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# 3.
+ Find Overlaps
+\end_layout
+
+\begin_layout Plain Layout
+
+overlaps = peaks.find_overlaps(promoters)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# 4.
+ Bridge to Python Ecosystem
+\end_layout
+
+\begin_layout Plain Layout
+
+# Subset peaks and convert to Pandas DataFrame
+\end_layout
+
+\begin_layout Plain Layout
+
+overlap_indices = overlaps[
+\begin_inset Quotes eld
+\end_inset
+
+query_hits
+\begin_inset Quotes erd
+\end_inset
+
+]
+\end_layout
+
+\begin_layout Plain Layout
+
+matched_peaks = peaks[overlap_indices]
+\end_layout
+
+\begin_layout Plain Layout
+
+df = matched_peaks.to_pandas()
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+# 5.
+ Visualization using standard Python libraries
+\end_layout
+
+\begin_layout Plain Layout
+
+sns.histplot(data=df,
+ x="score")
+\end_layout
+
+\begin_layout Plain Layout
+
+plt.title("Score Distribution of Promoter-Associated Peaks")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Discussion
+\end_layout
+
+\begin_layout Standard
+While BiocPy provides a bridge between ecosystems,
+ we acknowledge current limitations relative to the mature Bioconductor project.
+ First,
+ BiocPy focuses on foundational data structures and core single-cell analysis workflows;
+ it does not yet mirror the vast repository of over 2,000 specialized packages available in R.
+ Second,
+ the framework prioritizes strict type stability and object-oriented consistency (mirroring S4 semantics).
+ This design philosophy,
+ while essential for reproducibility,
+ may present a learning curve for Python users accustomed to the more permissive,
+ dynamic typing of standard libraries.
+ Finally,
+ while rds2py enables efficient data ingestion,
+ it currently supports core classes;
+ highly custom user-defined S4 objects may require additional configuration for mapping.
+\end_layout
+
+\begin_layout Standard
+BiocPy represents a maturation of the Python bioinformatics ecosystem.
+ It acknowledges that while Python may be the language of the future for AI,
+ Bioconductor remains the repository of biological wisdom and statistical standards.
+ By building a bridge between these worlds,
+ through shared data structures,
+ BiocPy empowers researchers to stop fighting their tools and focus on answering biological questions.
+ It enables a future where data flows freely between R and Python.
+\end_layout
+
+\begin_layout Section
+Data and Code Availability
+\end_layout
+
+\begin_layout Standard
+The BiocPy ecosystem is fully open-source,
+ licensed under the MIT license,
+ ensuring it can be freely used in both academic and commercial settings.
+ All packages are published to the Python Package Index (PyPI) for easy installation.
+ The source code is maintained under the BiocPy GitHub organization (
+\begin_inset CommandInset href
+LatexCommand href
+target "https://github.com/BiocPy"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+For new users,
+ the project provides a comprehensive tutorial suite at 
+\begin_inset CommandInset href
+LatexCommand href
+target "https://biocpy.github.io/tutorial/"
+
+\end_inset
+
+,
+ covering installation,
+ basic usage,
+ and advanced integration patterns.
+ The workshop materials,
+ which provided the basis for many of the examples in this report,
+ can be found at 
+\begin_inset CommandInset href
+LatexCommand href
+target "https://biocpy.github.io/BiocWorkshop2024/"
+
+\end_inset
+
+.
+ A developers guide can also be found at 
+\begin_inset CommandInset href
+LatexCommand href
+target "https://github.com/biocpy/developer_guide"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Acknowledgements
+\end_layout
+
+\begin_layout Standard
+We acknowledge Jean-Philippe Fortin,
+ Vincent Carey,
+ Kevin Yang,
+ Hector Corrada Bravo,
+ Michael Lawrence,
+ Xiaosai Yao and Mike Love for their support,
+ guidance and help in improving this manuscript.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintCited"
+bibfiles "biocpy_references"
+options "plain"
+encoding "default"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
