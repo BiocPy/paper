@@ -171,8 +171,7 @@ Bioconductor has served as the gold standard for high-throughput genomic analysi
  whereas Python has quickly become the primary environment for deep learning,
  image analysis,
  and general-purpose data science.
- This presents a challenge to the scientific community,
- navigating complex,
+ This presents a challenge to the scientific community by forcing them to navigating complex,
  fragile,
  and often inefficient interoperability solutions to leverage the strengths of both worlds.
  We present BiocPy,
@@ -196,10 +195,7 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-Bioinformatics is an interdisciplinary field at the intersection of molecular biology,
- statistics,
- and computer science.
- Bioconductor
+Bioconductor
 \begin_inset CommandInset citation
 LatexCommand cite
 key "gentleman_bioconductor_2004"
@@ -313,18 +309,18 @@ literal "false"
 The coexistence of these two powerful computational ecosystems creates a fragmentation problem.
  A typical modern genomic workflow might require the robust methods available in Bioconductor (R),
  followed by the application of deep learning models or inference methods available in Python.
- Researchers traditionally bridge this divide through file-based exchange (CSV),
- which loses metadata and incurs serialization costs.
+ Researchers traditionally bridge this divide by exchanging data using file based formats or through reticulate,
+ e.g.
+ csv,
+ h5,
+ BiocPy addresses this gap rather than forcing R to run inside Python (or vice-versa) or creating an entirely new,
+ incompatible Python-native standard,
+ which loses information and incurs serialization costs.
  Reimplementing statistical methods in Python often leads to subtle algorithmic divergence and incompatibility with standard data models.
- 
 \end_layout
 
 \begin_layout Standard
-BiocPy addresses this gap,
- rather than forcing R to run inside Python (or vice-versa),
- or creating an entirely new,
- incompatible Python-native standard,
- BiocPy ports Bioconductor’s core class definitions into Python.
+BiocPy ports Bioconductor’s core class definitions into Python.
  A 
 \begin_inset Flex Code
 status open
@@ -342,7 +338,7 @@ SummarizedExperiment
  By adhering to Bioconductor’s design principles,
  such as the separation of assay data from row/column metadata and the use of functional programming patterns,
  BiocPy enables a workflow where data can round-trip between R and Python.
- These efforts create a bridge between computational platforms and enable researchers to focus their time on biological questions rather than technical challenges.
+ These create a bridge between computational platforms and enable researchers to focus their time on biological questions rather than technical challenges.
 \end_layout
 
 \begin_layout Standard
@@ -412,12 +408,10 @@ Core Data Structures
 \end_layout
 
 \begin_layout Standard
-The development of BiocPy is not just a translation of R code into Python;
- it is an adoption of Bioconductor’s design philosophy into a Pythonic context.
+The development of BiocPy is an adoption of Bioconductor’s design philosophy into a Pythonic context.
  The development of the ecosystem is guided by adherence to specific design principles that prioritize reliability,
  interoperability and usability.
- The goal is not to compete with the existing Python data structures and scientific stack,
- but to provide objects that are structurally compatible with Bioconductor.
+ The goal is to provide objects that are structurally compatible with Bioconductor and interoperable with numpy and scipy.
  While BiocPy objects can be converted to popular Python packages (e.g.,
  pandas 
 \begin_inset Flex Code
@@ -463,7 +457,6 @@ in-place
 .
  This immutability safeguards against side effects common in complex genomic pipelines,
  offering a robust alternative to the mutable patterns often found in Python.
- Although conceptually rooted in R,
  BiocPy implementations take advantage of the existing Python scientific stack (NumPy,
  SciPy
 \begin_inset CommandInset citation
@@ -520,8 +513,8 @@ literal "false"
 
 \end_inset
 
-.
- Its primary role is to serve as a robust container for genomic metadata within the BiocPy ecosystem.
+ in providing a columnar store of various data types.
+ we use the same class rather than pandas because of several limitations.
  The pandas 
 \begin_inset Flex Code
 status open
@@ -546,7 +539,13 @@ BiocFrame
 \end_inset
 
  addresses.
- Unlike a standard pandas 
+ it focuses on accurately representing different types of data,
+ e..g.
+ such as arbitrarily nested columns,
+ or metadata.
+ we support any time as a column,
+ e.g.
+ you can Unlike a standard pandas 
 \begin_inset Flex Code
 status open
 
@@ -617,6 +616,9 @@ GenomicRanges
  rather than flattening everything into a 2D table.
  BiocFrame includes robust utilities for conversion to and from pandas or polar objects,
  because researchers often need to leverage these for general data cleaning or visualization tasks before moving into Bioconductor-specific workflows.
+ nested biocframe occasially used for namespacing,
+ for e.g.
+ scrapper uses this to maintain all qc control together.
 \end_layout
 
 \begin_layout Subsection
@@ -624,8 +626,7 @@ GenomicRanges
 \end_layout
 
 \begin_layout Standard
-Interval arithmetic is central to genomic analysis.
- The most crucial feature of Bioconductor is its handling of genomic intervals via the GenomicRanges
+The most crucial feature of Bioconductor is its handling of genomic intervals via the GenomicRanges
 \begin_inset CommandInset citation
 LatexCommand cite
 key "lawrence_software_2013"
@@ -683,7 +684,7 @@ GenomicRanges
 
 \end_inset
 
- object provides developers with structural guarantees regarding coordinate systems,
+ object provides developers with certain guarantees on the structure of the object regarding coordinate systems,
  strand information,
  and sequence lengths as shown in Figure 
 \begin_inset CommandInset ref
@@ -751,6 +752,7 @@ resize
  handling strand-specificity automatically.
  GenomicRanges serves as the foundation for performing interval operations in native Python,
  mirroring the functionality available in R.
+ add something about granges list
 \end_layout
 
 \begin_layout Standard
@@ -887,19 +889,7 @@ literal "false"
 
 \end_inset
 
- provides the fundamental container for matrix-like data.
- It enforces a geometry where rows represent features (genes) and columns represent samples,
- contrasting with the "observations as rows" convention in scverse/
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-AnnData
-\end_layout
-
-\end_inset
-
-.
+ implements the base container for matrix-like data including the bioconductor class of the same name.
  The 
 \begin_inset Flex Code
 status open
@@ -962,11 +952,11 @@ literal "false"
  class is tailored for single-cell RNA-seq data.
  It adds slots for reduced dimensions (PCA,
  UMAP,
- t-SNE) and Alternative Experiments (AltExps).
+ t-SNE) and alternative experiments (AltExps).
  In modern single-cell workflows,
  a cell might have RNA data,
  but also spike-in controls,
- or Antibody Derived Tags (CITE-seq).
+ or antibody derived tags (CITE-seq).
  
 \begin_inset Flex Code
 status open
@@ -988,11 +978,7 @@ MultiAssayExperiment (MAE)
 \end_layout
 
 \begin_layout Standard
-For complex study designs involving multiple assays performed on the same subjects (e.g.,
- a cohort with RNA-seq,
- mutation calls,
- and copy number variants),
- BiocPy implements MultiAssayExperiment
+BiocPy implements MultiAssayExperiment
 \begin_inset CommandInset citation
 LatexCommand cite
 key "noauthor_biocpymultiassayexperiment_2025"
@@ -1000,7 +986,11 @@ literal "false"
 
 \end_inset
 
-.
+ for complex study designs involving multiple assays performed on the same subjects (e.g.,
+ a cohort with RNA-seq,
+ mutation calls,
+ and copy number variants),
+ .
  This container manages a collection of experiments (which can be 
 \begin_inset Flex Code
 status open
@@ -1012,8 +1002,7 @@ SummarizedExperiment
 \end_inset
 
  objects or its derivatives) and a sample map that links biological specimens to the specific assays performed on them.
- This structure is vital for multi-omics integration,
- allowing for coordinated subsetting across diverse data modalities.
+ This structure facilitating multiomics integration allows for coordinated subsetting across diverse data modalities.
 \begin_inset Newline newline
 \end_inset
 
@@ -1184,6 +1173,17 @@ DelayedArray
 \end_inset
 
  objects in the "assays" slot.
+ While functionally similar to Dask
+\begin_inset CommandInset citation
+LatexCommand cite
+key "rocklin_dask_2015"
+literal "false"
+
+\end_inset
+
+,
+ BiocPy’s implementation ensures semantic consistency with R’s delayed array operations,
+ facilitating interoperability.
  This allows for operating on on-disk data (e.g.,
  HDF5
 \begin_inset CommandInset citation
@@ -1203,17 +1203,9 @@ literal "false"
 \end_inset
 
 ) without loading the full dataset into memory.
- While functionally similar to Dask
-\begin_inset CommandInset citation
-LatexCommand cite
-key "rocklin_dask_2015"
-literal "false"
-
-\end_inset
-
-,
- BiocPy’s implementation ensures semantic consistency with R’s delayed array operations,
- facilitating interoperability.
+ Supported operations include susbetting,
+ combiding,
+ arithmetic etc etc.
  Converters are available to transform these objects into Dask arrays for integration with the broader Python scientific stack.
  
 \end_layout
@@ -1239,102 +1231,10 @@ literal "false"
 
 ,
  a package that can read R’s binary serialization format (RDS).
- This allows Python environments to ingest complex S4 objects directly from disk without requiring an installed R runtime (Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:CS_rds2py"
-plural "false"
-caps "false"
-noprefix "false"
-nolink "false"
-
-\end_inset
-
-).
- rds2py implements memory-efficient loading strategies rather than performing deep copies wherever possible.
- This is essential when loading large Bioconductor objects for downstream analyses in Python.
+ This allows Python environments to ingest complex S4 objects directly from disk without requiring an installed R runtime.
  With the availability of Bioconductor classes in Python,
  we can provide access to the same data from R.
-\end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset Float figure
-placement h
-alignment document
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename CS_ rds2py.svg
-	lyxscale 20
-	scale 70
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:CS_rds2py"
-
-\end_inset
-
-Direct Ingestion of Serialized R Data.
- The 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-rds2py
-\end_layout
-
-\end_inset
-
- package bridges the serialization gap between R and Python.
- The workflow demonstrates the extraction of a native R 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-SingleCellExperiment
-\end_layout
-
-\end_inset
-
- object (saved via 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-saveRDS
-\end_layout
-
-\end_inset
-
-) directly into Python.
- The resulting Python object maintains full slot fidelity,
- including assays,
- metadata,
- and reduced dimensions without requiring an active R runtime.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+ biocpy classes facilkuitate makes we can accurately to represent the objects inside RDS objects within a python environment with minimal information loss.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1358,173 +1258,22 @@ literal "false"
 \end_layout
 
 \begin_layout Standard
-This layer acts as an intermediate data exchange format.
- An R user can serialize a 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-SingleCellExperiment
-\end_layout
-
-\end_inset
-
- to disk using ArtifactDB,
+An R user can serialize a to disk using ArtifactDB,
  and a Python user can fetch that same artifact from disk.
  The ArtifactDB python clients automatically reconstruct the native Python object from disk using an appropriate BiocPy class.
  This ensures that datasets remain consistent across the research community,
- regardless of the programming language used for analysis (Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:CS_adb"
-plural "false"
-caps "false"
-noprefix "false"
-nolink "false"
-
-\end_inset
-
-).
+ regardless of the programming language used for analysis.
 \end_layout
 
 \begin_layout Standard
-\align center
-\begin_inset Float figure
-placement h
-alignment document
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename CS_artifactdb.svg
-	lyxscale 40
-	scale 70
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:CS_adb"
-
-\end_inset
-
-Language-agnostic data persistence via ArtifactDB.
- An R 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-SingleCellExperiment
-\end_layout
-
-\end_inset
-
- is serialized to a language-neutral on-disk format (HDF5/JSON) using 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-alabaster
-\end_layout
-
-\end_inset
-
-.
- The corresponding 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-dolomite
-\end_layout
-
-\end_inset
-
- client in Python reconstructs the object as a native BiocPy 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-SingleCellExperiment
-\end_layout
-
-\end_inset
-
- object.
- This ensures that data storage is decoupled from the analysis language while preserving semantic metadata.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Quote
-Note:
- The library names 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-alabaster
-\end_layout
-
-\end_inset
-
-
-\begin_inset CommandInset citation
-LatexCommand cite
-key "noauthor_artifactdbalabasterbase_2025"
-literal "false"
-
-\end_inset
-
- and 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-dolomite
-\end_layout
-
-\end_inset
-
-
-\begin_inset CommandInset citation
-LatexCommand cite
-key "noauthor_artifactdbdolomite-base_2025"
-literal "false"
-
-\end_inset
-
- are manifestations of the ArtifactDB schemas and specifications in R and Python respectively.
+artifactdb is another thing biocpy supports.
+ it is used to represent some file store.
+ we use artifactdb for several packages in biocpy e.g.
+ scrnaseq and celldex
 \end_layout
 
 \begin_layout Section
 Case Studies
-\end_layout
-
-\begin_layout Standard
-The true value of BiocPy lies not just in data representations and storage formats,
- but in enabling robust methods development and flexible,
- iterative analysis pipelines.
- By providing standard data structures,
- BiocPy allows developers to build tools that are reproducible across-languages and allows analysts to leverage the best of both worlds.
 \end_layout
 
 \begin_layout Subsection
@@ -1532,7 +1281,7 @@ Multi-modal Single-Cell Analysis using scranpy
 \end_layout
 
 \begin_layout Standard
-We demonstrate a workflow that leverages the interoperability of the ecosystem.
+Process of using biocpy classes to handle interoperable analysis.
  The scrnaseq
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1601,18 +1350,7 @@ literal "false"
 
 \end_inset
 
- library (Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:Shared-cpp"
-plural "false"
-caps "false"
-noprefix "false"
-nolink "false"
-
-\end_inset
-
-) through the scran
+ through the scran
 \begin_inset CommandInset citation
 LatexCommand cite
 key "lun_step-by-step_2016"
@@ -1677,6 +1415,11 @@ nolink "false"
 
 .
  
+\end_layout
+
+\begin_layout Standard
+TODO:
+ focus on bioc representations.
 \end_layout
 
 \begin_layout Standard
@@ -1761,68 +1504,6 @@ literal "false"
 
 ,
  ensuring consistent interpretation of the same dataset across diverse computational platforms.
-\end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset Float figure
-placement h
-alignment document
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename scran.svg
-	lyxscale 50
-	scale 65
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:Shared-cpp"
-
-\end_inset
-
-Shared C++ libraries enabling single-cell analyses across computational environments.
- The single-cell analysis stack relies on core C++ libraries (e.g.,
- tatami for matrix abstraction,
- libscran for analysis).
- These are wrapped via Rcpp for Bioconductor,
- pybind11 for BiocPy,
- and emscripten
-\begin_inset CommandInset citation
-LatexCommand cite
-key "noauthor_emscripten-coreemscripten_2025"
-literal "false"
-
-\end_inset
-
- for WebAssembly.
- This architecture ensures that high-level calls in R,
- Python,
- or JavaScript (Kana) execute identical low-level machine code,
- preventing algorithmic differences.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection
@@ -1979,12 +1660,6 @@ While BiocPy provides a bridge between ecosystems,
  First,
  BiocPy focuses on foundational data structures and core single-cell analysis workflows;
  it does not yet mirror (nor is our intent) the vast repository of over 2,000 specialized packages available in R.
- Second,
- the framework prioritizes strict type stability and object-oriented consistency (mirroring S4 semantics).
- This design philosophy,
- while essential for reproducibility,
- may present a learning curve for Python users accustomed to the more permissive,
- dynamic typing of standard libraries.
  Finally,
  while rds2py enables efficient data ingestion,
  it currently supports core classes;
@@ -1993,13 +1668,21 @@ While BiocPy provides a bridge between ecosystems,
 \end_layout
 
 \begin_layout Standard
-BiocPy represents a maturation of the Python bioinformatics ecosystem.
- It acknowledges that while Python may be the language of the future for AI,
- Bioconductor remains the standard for statistical and biological data modeling.
- By building a bridge through shared data structures,
- BiocPy empowers developers to create tools that seamlessly traverse the R/Python divide,
- effectively enabling researchers to stop fighting their tools and focus on answering biological questions.
- It envisions a future where data flows freely between R and Python.
+biocpy helps bioconductor developers write similar packages in python.
+ the aim is to provide a familiar core representations.
+ we don't support all bioconductor classes yet but we are working towards it.
+ we are working on extending to spatial.
+ we don't mirror the analysis methods,
+ we aim to make it easier for other developers to make equivalent and facilitate the translation.
+ 
+\end_layout
+
+\begin_layout Standard
+usecases of developing stuff
+\end_layout
+
+\begin_layout Standard
+automatic translations of data
 \end_layout
 
 \begin_layout Section
